@@ -1,5 +1,6 @@
 package com.limethecoder.data.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -10,10 +11,13 @@ public class ZipCode {
     @Id
     private int zip;
 
+    @Column(nullable = false)
     private String country;
 
+    @Column(nullable = false)
     private String state;
 
+    @Column(nullable = false)
     private String city;
 
     public int getZip() {
