@@ -1,0 +1,11 @@
+package com.limethecoder.data.repository;
+
+
+import com.limethecoder.data.domain.Publisher;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface PublisherRepository extends JpaRepository<Publisher, Integer> {
+    List<Publisher> findByName(String name);
+}

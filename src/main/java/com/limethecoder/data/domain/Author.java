@@ -19,7 +19,7 @@ public class Author {
     private String photoUrl;
 
     @ManyToMany
-    @JoinTable(name = "Author_Book",
+    @JoinTable(name = "Book_Author",
             joinColumns = @JoinColumn(name = "author_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"))
     private Set<Book> books;
