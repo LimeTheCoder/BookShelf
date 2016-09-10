@@ -2,7 +2,6 @@ package com.limethecoder.controller;
 
 
 import com.limethecoder.data.domain.Book;
-import com.limethecoder.data.repository.BookRepository;
 import com.limethecoder.data.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface AuthorService extends Service<Author> {
     List<Author> findByNameAndSurname(String name, String surname);
+    List<Author> findAuthorsLimit(int cnt);
 }

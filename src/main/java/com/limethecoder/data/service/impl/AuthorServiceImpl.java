@@ -21,6 +21,11 @@ public class AuthorServiceImpl extends AbstractService<Author> implements Author
     }
 
     @Override
+    public List<Author> findAuthorsLimit(int cnt) {
+        return authorRepository.findAuthorsLimit(cnt);
+    }
+
+    @Override
     protected JpaRepository<Author, Integer> getRepository() {
         return authorRepository;
     }
