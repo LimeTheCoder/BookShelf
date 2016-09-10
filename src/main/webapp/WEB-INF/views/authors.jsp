@@ -10,7 +10,7 @@
     </c:when>
     <c:otherwise>
         <h1>Authors</h1>
-        <ul class="spittleList">
+        <ul>
             <c:forEach items="${authorList}" var="author" >
                 <li id="author_<c:out value="author.id"/>">
                     <div><c:out value="${author.name}" /></div>

@@ -21,6 +21,11 @@ public class BookServiceImpl extends AbstractService<Book> implements BookServic
     }
 
     @Override
+    public List<Book> findBooksLimit(int cnt) {
+        return bookRepository.findBooksLimit(cnt);
+    }
+
+    @Override
     protected JpaRepository<Book, Integer> getRepository() {
         return bookRepository;
     }
