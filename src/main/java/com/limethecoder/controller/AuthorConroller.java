@@ -5,10 +5,8 @@ import com.limethecoder.data.service.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +27,21 @@ public class AuthorConroller {
         Author author = authorService.findOne(id);
         model.addAttribute("author", author);
         return "author";
+    }
+
+    @RequestMapping(value = "/add", method = RequestMethod.GET)
+    public String showForm(Model model) {
+        model.addAttribute(new Author());
+        return "addAuthor";
+    }
+
+    @RequestMapping(value = "/add", method = RequestMethod.POST)
+    public String submit(@ModelAttribute("author") Author author, BindingResult result) {
+        if (result.hasErrors())
+            return "error";
+
+        Author saved = authorService.add(author);
+
+        return "redirect:/authors/" + saved.getId();
     }
 }
