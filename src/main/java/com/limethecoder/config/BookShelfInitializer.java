@@ -21,6 +21,6 @@ public class BookShelfInitializer extends AbstractAnnotationConfigDispatcherServ
     @Override
     protected void customizeRegistration(ServletRegistration.Dynamic registration) {
         registration.setMultipartConfig(
-                new MultipartConfigElement("/uploads", 1000000, 2000000, 0));
+                new MultipartConfigElement("", 1000000, 2000000, 0));
     }
 }

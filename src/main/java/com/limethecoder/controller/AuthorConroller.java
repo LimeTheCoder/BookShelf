@@ -9,6 +9,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -18,8 +19,6 @@ import java.util.List;
 public class AuthorConroller {
     @Autowired
     private AuthorService authorService;
-
-    private final String SAVE_DIR = "uploads/";
 
     @RequestMapping(method=RequestMethod.GET)
     public List<Author> authors(
@@ -43,15 +42,17 @@ public class AuthorConroller {
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public String submit(@ModelAttribute("author") Author author,
                          BindingResult result,
-                         @RequestParam(value = "image", required = false) MultipartFile image)
+                         @RequestPart(value = "photo") MultipartFile image,
+                         HttpServletRequest request)
             throws IOException {
         if (result.hasErrors())
             return "error";
 
-        if(!image.isEmpty()) {
-            String path = SAVE_DIR + image.getOriginalFilename();
-            image.transferTo(new File(path));
-            author.setPhotoUrl(path);
+        if(image != null && !image.isEmpty()) {
+            String realPath = request.getServletContext()
+                    .getRealPath("/") + image.getOriginalFilename();
+            image.transferTo(new File(realPath));
+            author.setPhotoUrl("/" + image.getOriginalFilename());
         }
         Author saved = authorService.add(author);
 
