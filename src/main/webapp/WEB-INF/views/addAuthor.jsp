@@ -4,7 +4,7 @@
 <head>
 </head>
 <body>
-<form:form method="POST" modelAttribute="author">
+<form:form method="POST" modelAttribute="author" enctype="multipart/form-data">
     <table>
         <tr>
             <td><form:label path="name">Name</form:label></td>
@@ -14,6 +14,11 @@
             <td><form:label path="surname">Surname</form:label></td>
             <td><form:input path="surname"/></td>
         </tr>
+        <tr>
+            <td><label for="photo">Photo</label></td>
+            <td><input type="file" name="photo" id="photo" accept="image/jpeg, image/png"/></td>
+        </tr>
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <tr>
             <td><input type="submit" value="Submit"/></td>
         </tr>

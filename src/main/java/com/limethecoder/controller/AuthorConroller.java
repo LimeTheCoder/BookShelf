@@ -7,7 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 @Controller
@@ -15,6 +18,8 @@ import java.util.List;
 public class AuthorConroller {
     @Autowired
     private AuthorService authorService;
+
+    private final String SAVE_DIR = "uploads/";
 
     @RequestMapping(method=RequestMethod.GET)
     public List<Author> authors(
@@ -36,10 +41,18 @@ public class AuthorConroller {
     }
 
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public String submit(@ModelAttribute("author") Author author, BindingResult result) {
+    public String submit(@ModelAttribute("author") Author author,
+                         BindingResult result,
+                         @RequestParam(value = "image", required = false) MultipartFile image)
+            throws IOException {
         if (result.hasErrors())
             return "error";
 
+        if(!image.isEmpty()) {
+            String path = SAVE_DIR + image.getOriginalFilename();
+            image.transferTo(new File(path));
+            author.setPhotoUrl(path);
+        }
         Author saved = authorService.add(author);
 
         return "redirect:/authors/" + saved.getId();
