@@ -24,6 +24,10 @@ public class Author {
             inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"))
     private Set<Book> books;
 
+    public String getDisplayName() {
+        return name + " " + surname;
+    }
+
     public int getId() {
         return id;
     }
