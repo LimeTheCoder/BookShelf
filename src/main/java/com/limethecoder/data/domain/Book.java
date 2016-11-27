@@ -1,47 +1,43 @@
 package com.limethecoder.data.domain;
 
-import javax.persistence.*;
-import java.util.Set;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
+import java.util.List;
+
+
+@Document
 public class Book {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private String id;
 
-    @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
     private String description;
 
-    @Column(name = "pages", nullable = false)
+    @Field("pages_cnt")
     private int pagesCnt;
 
-    @Column(name = "publish_year", nullable = false)
+    @Field("publish_year")
     private int publishYear;
 
-    @Column(name = "image")
-    private String iconUrl;
+    @Field("cover_url")
+    private String coverUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "publisher_id", nullable = false)
     private Publisher publisher;
 
-    @ManyToMany(mappedBy = "books", fetch = FetchType.EAGER)
-    private Set<Author> authors;
+    private List<Author> authors;
 
-    @ManyToMany
-    @JoinTable(name = "Book_Genre",
-            joinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id", referencedColumnName = "id"))
-    private Set<Genre> genres;
+    @DBRef
+    private List<Genre> genres;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -77,12 +73,12 @@ public class Book {
         this.publishYear = publishYear;
     }
 
-    public String getIconUrl() {
-        return iconUrl;
+    public String getCoverUrl() {
+        return coverUrl;
     }
 
-    public void setIconUrl(String iconUrl) {
-        this.iconUrl = iconUrl;
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
     }
 
     public Publisher getPublisher() {
@@ -93,19 +89,24 @@ public class Book {
         this.publisher = publisher;
     }
 
-    public Set<Author> getAuthors() {
+    public List<Author> getAuthors() {
         return authors;
     }
 
-    public void setAuthors(Set<Author> authors) {
+    public void setAuthors(List<Author> authors) {
         this.authors = authors;
     }
 
-    public Set<Genre> getGenres() {
+    public List<Genre> getGenres() {
         return genres;
     }
 
-    public void setGenres(Set<Genre> genres) {
+    public void setGenres(List<Genre> genres) {
         this.genres = genres;
+    }
+
+    @Override
+    public String toString() {
+        return title;
     }
 }

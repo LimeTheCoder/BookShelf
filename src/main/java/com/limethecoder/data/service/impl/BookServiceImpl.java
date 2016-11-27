@@ -1,32 +1,26 @@
 package com.limethecoder.data.service.impl;
 
-
 import com.limethecoder.data.domain.Book;
 import com.limethecoder.data.repository.BookRepository;
 import com.limethecoder.data.service.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
 
-@org.springframework.stereotype.Service
-public class BookServiceImpl extends AbstractService<Book> implements BookService {
+@Service
+public class BookServiceImpl extends AbstractMongoService<Book, String>
+        implements BookService {
+
+    private BookRepository repository;
 
     @Autowired
-    private BookRepository bookRepository;
-
-    @Override
-    public List<Book> findByTitle(String title) {
-        return bookRepository.findByTitle(title);
+    public BookServiceImpl(BookRepository repository) {
+        this.repository = repository;
     }
 
     @Override
-    public List<Book> findBooksLimit(int cnt) {
-        return bookRepository.findBooksLimit(cnt);
-    }
-
-    @Override
-    protected JpaRepository<Book, Integer> getRepository() {
-        return bookRepository;
+    protected MongoRepository<Book, String> getRepository() {
+        return repository;
     }
 }

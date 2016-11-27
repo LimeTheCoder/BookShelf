@@ -1,8 +1,8 @@
 package com.limethecoder.data.repository;
 
-
 import com.limethecoder.data.domain.Genre;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface GenreRepository extends JpaRepository<Genre, Integer> {
+
+public interface GenreRepository extends MongoRepository<Genre, String> {
 }

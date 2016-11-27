@@ -1,39 +1,19 @@
 package com.limethecoder.data.domain;
 
-import javax.persistence.*;
-import java.util.Set;
+import org.springframework.data.mongodb.core.mapping.Field;
 
-@Entity
+import java.util.Date;
+
 public class Author {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false)
     private String surname;
 
-    @Column(name = "photo")
-    private String photoUrl;
+    @Field("birth_date")
+    private Date birthDate;
 
-    @ManyToMany
-    @JoinTable(name = "Book_Author",
-            joinColumns = @JoinColumn(name = "author_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "book_id", referencedColumnName = "id"))
-    private Set<Book> books;
-
-    public String getDisplayName() {
+    @Override
+    public String toString() {
         return name + " " + surname;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -52,19 +32,31 @@ public class Author {
         this.surname = surname;
     }
 
-    public String getPhotoUrl() {
-        return photoUrl;
+    public Date getBirthDate() {
+        return birthDate;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
+    public void setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
     }
 
-    public Set<Book> getBooks() {
-        return books;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Author author = (Author) o;
+
+        if (!name.equals(author.name)) return false;
+        if (!surname.equals(author.surname)) return false;
+        return birthDate != null ? birthDate.equals(author.birthDate) : author.birthDate == null;
     }
 
-    public void setBooks(Set<Book> books) {
-        this.books = books;
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + surname.hashCode();
+        result = 31 * result + (birthDate != null ? birthDate.hashCode() : 0);
+        return result;
     }
 }

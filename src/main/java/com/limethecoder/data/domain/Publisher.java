@@ -1,29 +1,13 @@
 package com.limethecoder.data.domain;
 
-import javax.persistence.*;
 
-@Entity
 public class Publisher {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @Column(nullable = false)
     private String name;
+    private Address address;
 
-    @Column(nullable = false)
-    private String address;
-
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="zip", nullable = false)
-    private ZipCode zip;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+    public Publisher(String name, Address address) {
+        this.name = name;
+        this.address = address;
     }
 
     public String getName() {
@@ -34,19 +18,29 @@ public class Publisher {
         this.name = name;
     }
 
-    public String getAddress() {
+    public Address getAddress() {
         return address;
     }
 
-    public void setAddress(String address) {
+    public void setAddress(Address address) {
         this.address = address;
     }
 
-    public ZipCode getZip() {
-        return zip;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Publisher publisher = (Publisher) o;
+
+        if (!name.equals(publisher.name)) return false;
+        return address != null ? address.equals(publisher.address) : publisher.address == null;
     }
 
-    public void setZip(ZipCode zip) {
-        this.zip = zip;
+    @Override
+    public int hashCode() {
+        int result = name.hashCode();
+        result = 31 * result + (address != null ? address.hashCode() : 0);
+        return result;
     }
 }

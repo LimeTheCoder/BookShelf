@@ -9,7 +9,7 @@ import org.springframework.core.type.filter.RegexPatternTypeFilter;
 import java.util.regex.Pattern;
 
 @Configuration
-@Import(DataConfig.class)
+@Import({DataConfig.class, MongoConfig.class})
 @ComponentScan(basePackages = {"com.limethecoder"},
         excludeFilters={
                 @ComponentScan.Filter(type= FilterType.CUSTOM, value=RootConfig.ControllerPackage.class)
