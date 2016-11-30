@@ -4,6 +4,7 @@ package com.limethecoder.controller;
 import com.limethecoder.data.domain.*;
 import com.limethecoder.data.service.BookService;
 import com.limethecoder.data.service.GenreService;
+import com.limethecoder.data.service.RoleService;
 import com.limethecoder.data.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,10 +21,11 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class HomeController {
     private UserService userService;
     @Autowired
-    private GenreService genreService;
+    private RoleService roleService;
     @Autowired
     private BookService bookService;
 
+    static int cnt = 0;
     @Autowired
     public HomeController(UserService userService) {
         this.userService = userService;
@@ -32,7 +34,8 @@ public class HomeController {
     @RequestMapping(method = GET)
     public String home(Model model) {
         model.addAttribute("message", "It's working!!");
-        bookService.findAll().forEach(System.out::println);
+        Role role = new Role("ADMIN");
+        roleService.add(role);
         return "home";
     }
 

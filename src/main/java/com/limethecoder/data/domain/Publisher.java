@@ -5,6 +5,8 @@ public class Publisher {
     private String name;
     private Address address;
 
+    public Publisher() {}
+
     public Publisher(String name, Address address) {
         this.name = name;
         this.address = address;

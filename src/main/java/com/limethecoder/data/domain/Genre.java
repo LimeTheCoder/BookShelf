@@ -8,6 +8,8 @@ public class Genre {
     @Id
     private String name;
 
+    public Genre() {}
+
     public Genre(String name) {
         this.name = name;
     }

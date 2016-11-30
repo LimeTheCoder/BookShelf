@@ -41,7 +41,7 @@ public class DataConfig {
         HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
         adapter.setDatabase(Database.MYSQL);
         adapter.setShowSql(true);
-        adapter.setGenerateDdl(false);
+        adapter.setGenerateDdl(true);
         return adapter;
     }
 

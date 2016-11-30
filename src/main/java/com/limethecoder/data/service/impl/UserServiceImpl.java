@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 @org.springframework.stereotype.Service
-public class UserServiceImpl extends AbstractJPAService<User, String>
+public class UserServiceImpl extends AbstractJPAService<User, Long>
         implements UserService {
     private UserRepository userRepository;
 
@@ -18,7 +18,7 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
     }
 
     @Override
-    protected JpaRepository<User, String> getRepository() {
+    protected JpaRepository<User, Long> getRepository() {
         return userRepository;
     }
 }
