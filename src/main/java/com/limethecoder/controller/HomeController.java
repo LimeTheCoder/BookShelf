@@ -25,7 +25,6 @@ public class HomeController {
     @Autowired
     private BookService bookService;
 
-    static int cnt = 0;
     @Autowired
     public HomeController(UserService userService) {
         this.userService = userService;
@@ -34,8 +33,19 @@ public class HomeController {
     @RequestMapping(method = GET)
     public String home(Model model) {
         model.addAttribute("message", "It's working!!");
-        Role role = new Role("ADMIN");
-        roleService.add(role);
+        User user = new User();
+        Role role = roleService.findOne("ADMIN");
+        if(userService.findOne("laymont") == null) {
+            user.setCity("Kyiv");
+            user.setLogin("laymont");
+            user.setName("Lesley");
+            user.setSurname("Jagger");
+            user.setPassword("test");
+            user.setPhotoUrl("url");
+            user.setRoles(Arrays.asList(role));
+            userService.add(user);
+            System.out.println(userService.findOne("laymont").getRoles().get(0).getName());
+        }
         return "home";
     }
 

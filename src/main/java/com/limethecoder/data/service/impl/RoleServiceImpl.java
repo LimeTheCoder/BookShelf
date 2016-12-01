@@ -9,12 +9,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RoleServiceImpl extends AbstractJPAService<Role, Long> implements RoleService{
+public class RoleServiceImpl extends AbstractJPAService<Role, String> implements RoleService{
     @Autowired
     RoleRepository repository;
 
     @Override
-    protected JpaRepository<Role, Long> getRepository() {
+    protected JpaRepository<Role, String> getRepository() {
         return repository;
     }
 }

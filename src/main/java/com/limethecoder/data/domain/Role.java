@@ -6,9 +6,6 @@ import java.util.List;
 @Entity
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
-
     private String name;
 
     public Role() {}
@@ -19,14 +16,6 @@ public class Role {
 
     @ManyToMany(mappedBy = "roles")
     private List<User> users;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

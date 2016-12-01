@@ -6,9 +6,7 @@ import java.util.List;
 @Entity
 public class User {
     @Id
-    private long id;
-
-    private String email;
+    private String login;
 
     @Column(length = 60)
     private String password;
@@ -28,21 +26,13 @@ public class User {
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(
             name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "login"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "name"))
     private List<Role> roles;
 
     @Override
     public String toString() {
-        return email;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
+        return login;
     }
 
     public boolean isEnabled() {
@@ -59,14 +49,6 @@ public class User {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPassword() {
@@ -107,5 +89,13 @@ public class User {
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 }
