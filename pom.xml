@@ -101,6 +101,11 @@
 			<artifactId>spring-data-mongodb</artifactId>
 			<version>1.9.5.RELEASE</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-validator</artifactId>
+			<version>5.3.3.Final</version>
+		</dependency>
     </dependencies>
 
 	<build>
