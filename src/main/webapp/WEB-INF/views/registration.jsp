@@ -11,7 +11,7 @@
 <body>
 <h1>Registry process</h1>
 
-<form:form modelAttribute="user" method="POST" enctype="utf8">
+<form:form modelAttribute="user" method="POST" enctype="multipart/form-data">
     <br>
     <tr><td>
         <label>Login:</label>
@@ -36,6 +36,12 @@
     </td>
         <td><form:input path="surname" value="" /></td>
         <form:errors path="surname" element="div" />
+    </tr>
+    <tr><td>
+        <label>Photo: </label>
+    </td>
+        <td><form:input path="photo" value="" type="file"/></td>
+        <form:errors path="photo" element="div" />
     </tr>
     <tr><td>
         <label>Password:</label>

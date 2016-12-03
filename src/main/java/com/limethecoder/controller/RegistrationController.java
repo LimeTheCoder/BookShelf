@@ -14,7 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
 
 @Controller
 @RequestMapping("/registration")
@@ -32,9 +35,23 @@ public class RegistrationController {
     @RequestMapping(method = RequestMethod.POST)
     public ModelAndView registerUser(
             @ModelAttribute("user") @Valid UserDto userDto,
-            BindingResult result) {
+            BindingResult result, HttpServletRequest request){
 
         if(!result.hasErrors()) {
+            if(userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
+                String realPath = request.getServletContext().getRealPath("/") +
+                        userDto.getPhoto().getOriginalFilename();
+                try {
+                    userDto.getPhoto().transferTo(new File(realPath));
+                    userDto.setPhotoUrl("/" +
+                            userDto.getPhoto().getOriginalFilename());
+                    System.out.println("File saved: " + realPath);
+
+                } catch (IOException e) {
+                    System.out.println("Cannot save file " + e.getMessage());
+                }
+            }
+
             User user = userService.registerNewUser(userDto);
             if(user != null) {
                 return new ModelAndView("home", "message", user.getName());

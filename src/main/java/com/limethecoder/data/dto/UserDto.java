@@ -2,7 +2,10 @@ package com.limethecoder.data.dto;
 
 
 import com.limethecoder.controller.validation.PasswordMatches;
+import com.limethecoder.controller.validation.ValidImage;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -34,6 +37,27 @@ public class UserDto {
     private String password;
 
     private String matchingPassword;
+
+    @ValidImage
+    private MultipartFile photo;
+
+    private String photoUrl;
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+
+    public MultipartFile getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(MultipartFile photo) {
+        this.photo = photo;
+    }
 
     public String getLogin() {
         return login;
