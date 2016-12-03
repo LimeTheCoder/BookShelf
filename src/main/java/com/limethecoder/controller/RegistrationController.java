@@ -33,9 +33,10 @@ public class RegistrationController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ModelAndView registerUser(
+    public String registerUser(
             @ModelAttribute("user") @Valid UserDto userDto,
-            BindingResult result, HttpServletRequest request){
+            BindingResult result, HttpServletRequest request,
+            Model model){
 
         if(!result.hasErrors()) {
             if(userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
@@ -54,13 +55,14 @@ public class RegistrationController {
 
             User user = userService.registerNewUser(userDto);
             if(user != null) {
-                return new ModelAndView("home", "message", user.getName());
+                return "redirect:/";
             } else {
                 result.rejectValue("login", "",
                         "User with such login already exists");
             }
         }
 
-        return new ModelAndView("registration", "user", userDto);
+        model.addAttribute("user", userDto);
+        return "registration";
     }
 }
