@@ -8,6 +8,7 @@ import com.limethecoder.data.repository.UserRepository;
 import com.limethecoder.data.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Arrays;
 
@@ -16,6 +17,9 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
         implements UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
@@ -29,6 +33,9 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
         if(userRepository.exists(obj.getLogin())) {
             return null;
         }
+
+        obj.setPassword(passwordEncoder.encode(obj.getPassword()));
+
         return userRepository.saveAndFlush(obj);
     }
 
@@ -49,7 +56,7 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
         user.setSurname(userDto.getSurname());
         user.setCity(userDto.getCity());
         user.setEnabled(true);
-        user.setPassword(userDto.getPassword());
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
         user.setRoles(Arrays.asList(roleRepository.findOne("USER")));
 
         return userRepository.saveAndFlush(user);
