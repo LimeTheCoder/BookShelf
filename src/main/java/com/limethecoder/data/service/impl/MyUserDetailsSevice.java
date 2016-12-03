@@ -16,10 +16,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service("userDetailsService")
+@Service
 @Transactional
 public class MyUserDetailsSevice implements UserDetailsService {
-    private final static String EMPTY_STRING = " ";
     private final static String ROLE_PREFIX = "ROLE_";
 
     @Autowired
@@ -31,10 +30,7 @@ public class MyUserDetailsSevice implements UserDetailsService {
         List<GrantedAuthority> authorities = new ArrayList<>();
 
         if(user == null) {
-            authorities.add(new SimpleGrantedAuthority(ROLE_PREFIX + "USER"));
-            return new org.springframework.security.core.userdetails.User(
-                    EMPTY_STRING, EMPTY_STRING, true, true,
-                    true, true, authorities);
+            throw new UsernameNotFoundException("No user with such login");
         }
 
         for (Role role : user.getRoles()) {
