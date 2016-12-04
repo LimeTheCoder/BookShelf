@@ -1,11 +1,15 @@
 package com.limethecoder.controller;
 
+import com.limethecoder.data.domain.Role;
 import com.limethecoder.data.domain.User;
 import com.limethecoder.data.dto.UserDto;
 import com.limethecoder.data.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.io.File;
@@ -65,9 +70,20 @@ public class UserController {
 
 
     @RequestMapping(path = "/registration", method = RequestMethod.GET)
-    public String showFormForRegistration(Model model) {
+    public String showFormForRegistration(Model model, Authentication authentication) {
+
+        /* Prevent from creating new account to already registered user */
+        if(authentication != null &&
+                !authentication.getAuthorities()
+                        .contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            System.out.println(authentication.getName());
+            return "redirect:/";
+        }
+
         UserDto userDto = new UserDto();
         model.addAttribute("user", userDto);
+        model.addAttribute("title", "Create new account");
+
         return "registration";
     }
 
@@ -75,25 +91,28 @@ public class UserController {
     public String registerUser(
             @ModelAttribute("user") @Valid UserDto userDto,
             BindingResult result, HttpServletRequest request,
-            Model model){
+            Model model, Authentication authentication) {
+
+        /* Prevent from creating new account to already registered user */
+        if(authentication != null &&
+                !authentication.getAuthorities()
+                        .contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+            return "redirect:/";
+        }
 
         if(!result.hasErrors()) {
-            if(userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
-                String realPath = request.getServletContext().getRealPath("/") +
-                        userDto.getPhoto().getOriginalFilename();
-                try {
-                    userDto.getPhoto().transferTo(new File(realPath));
-                    userDto.setPhotoUrl("/" +
-                            userDto.getPhoto().getOriginalFilename());
-                    System.out.println("File saved: " + realPath);
-
-                } catch (IOException e) {
-                    System.out.println("Cannot save file " + e.getMessage());
-                }
-            }
+            saveImage(userDto, request);
 
             User user = userService.registerNewUser(userDto);
             if(user != null) {
+                /* if user is not authenticated, then log in user */
+                if(authentication == null) {
+                    try {
+                        request.login(userDto.getLogin(), userDto.getPassword());
+                    } catch (ServletException e) {
+                        System.out.println("Unable to authenticate user" + e.getMessage());
+                    }
+                 }
                 return "redirect:/";
             } else {
                 result.rejectValue("login", "",
@@ -102,6 +121,24 @@ public class UserController {
         }
 
         model.addAttribute("user", userDto);
+        model.addAttribute("title", "Create new account");
+
         return "registration";
+    }
+
+    private void saveImage(UserDto userDto, HttpServletRequest request) {
+        if(userDto.getPhoto() != null && !userDto.getPhoto().isEmpty()) {
+            String realPath = request.getServletContext().getRealPath("/") +
+                    userDto.getPhoto().getOriginalFilename();
+            try {
+                userDto.getPhoto().transferTo(new File(realPath));
+                userDto.setPhotoUrl("/" +
+                        userDto.getPhoto().getOriginalFilename());
+                System.out.println("File saved: " + realPath);
+
+            } catch (IOException e) {
+                System.out.println("Cannot save file " + e.getMessage());
+            }
+        }
     }
 }

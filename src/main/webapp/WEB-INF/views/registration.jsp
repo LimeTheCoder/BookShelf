@@ -3,16 +3,18 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+
 <%@ page session="false"%>
 <html>
 <head>
     <title>Welcome</title>
-    <link rel='stylesheet' href='webjars/bootstrap/3.3.7-1/css/bootstrap.min.css'>
+    <link rel='stylesheet' href='/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css'>
 </head>
 
 <body>
 <div class="page-header">
-    <h1>Create new user account</h1>
+    <h1>${title}</h1>
 </div>
 
 <div class="container">
@@ -97,12 +99,24 @@
                         </div>
                     </c:if>
                 </div>
+                <sec:authorize access="hasRole('ADMIN')">
+                    <div class="form-group">
+                        <label>Confirm password:</label>
+
+                        <td><form:input path="roles" value="" type="password" class="form-control" /></td>
+                        <c:if test="${not empty Errors}">
+                            <div class="alert alert-danger">
+                                <strong>Error!</strong> ${Errors}
+                            </div>
+                        </c:if>
+                    </div>
+                </sec:authorize>
                 <button type="submit" class="btn btn-default">Submit</button>
             </form:form>
         </div>
     </div>
 </div>
-<script src="webjars/jquery/3.1.1/jquery.min.js"></script>
-<script src="webjars/bootstrap/3.3.7-1/js/bootstrap.min.js"></script>
+<script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
+<script src="/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js"></script>
 </body>
 </html>

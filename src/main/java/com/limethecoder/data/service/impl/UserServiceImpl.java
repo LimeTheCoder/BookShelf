@@ -57,7 +57,12 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
         user.setCity(userDto.getCity());
         user.setEnabled(true);
         user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        user.setRoles(Arrays.asList(roleRepository.findOne("USER")));
+
+        if(userDto.getRoles() == null || userDto.getRoles().isEmpty()) {
+            user.setRoles(Arrays.asList(roleRepository.findOne("USER")));
+        } else {
+            user.setRoles(userDto.getRoles());
+        }
 
         if(userDto.getPhotoUrl() != null) {
             user.setPhotoUrl(userDto.getPhotoUrl());

@@ -35,6 +35,14 @@ public class User {
         return login;
     }
 
+    public String printRoles() {
+        if(roles.size() == 1) {
+            return roles.get(0).toString();
+        }
+
+        return roles.toString();
+    }
+
     public boolean isEnabled() {
         return enabled;
     }

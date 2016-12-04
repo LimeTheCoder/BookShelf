@@ -3,11 +3,13 @@ package com.limethecoder.data.dto;
 
 import com.limethecoder.controller.validation.PasswordMatches;
 import com.limethecoder.controller.validation.ValidImage;
+import com.limethecoder.data.domain.Role;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.List;
 
 @PasswordMatches
 public class UserDto {
@@ -42,6 +44,24 @@ public class UserDto {
     private MultipartFile photo;
 
     private String photoUrl;
+
+    private List<Role> roles;
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+    public String printRoles() {
+        if(roles.size() == 1) {
+            return roles.get(0).toString();
+        }
+
+        return roles.toString();
+    }
 
     public String getPhotoUrl() {
         return photoUrl;
