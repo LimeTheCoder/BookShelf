@@ -1,6 +1,8 @@
 package com.limethecoder.data.service.impl;
 
 import com.limethecoder.data.service.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.io.Serializable;
@@ -21,6 +23,11 @@ public abstract class AbstractMongoService<T, ID extends Serializable> implement
     @Override
     public List<T> findAll() {
         return getRepository().findAll();
+    }
+
+    @Override
+    public Page<T> findAll(Pageable pageable) {
+        return getRepository().findAll(pageable);
     }
 
     @Override

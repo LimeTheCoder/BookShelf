@@ -1,6 +1,8 @@
 package com.limethecoder.data.service.impl;
 
 import com.limethecoder.data.service.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.io.Serializable;
@@ -21,6 +23,11 @@ public abstract class AbstractJPAService<T, ID extends Serializable> implements 
     @Override
     public List<T> findAll() {
         return getRepository().findAll();
+    }
+
+    @Override
+    public Page<T> findAll(Pageable pageable) {
+        return getRepository().findAll(pageable);
     }
 
     @Override
