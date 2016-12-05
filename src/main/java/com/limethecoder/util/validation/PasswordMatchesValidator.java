@@ -1,4 +1,4 @@
-package com.limethecoder.controller.validation;
+package com.limethecoder.util.validation;
 
 
 import com.limethecoder.data.dto.UserDto;

@@ -101,14 +101,12 @@
                 </div>
                 <sec:authorize access="hasRole('ADMIN')">
                     <div class="form-group">
-                        <label>Confirm password:</label>
-
-                        <td><form:input path="roles" value="" type="password" class="form-control" /></td>
-                        <c:if test="${not empty Errors}">
-                            <div class="alert alert-danger">
-                                <strong>Error!</strong> ${Errors}
-                            </div>
-                        </c:if>
+                        <form:label path="roles">Roles:</form:label>
+                        <td>
+                            <form:select path="roles" multiple="true" class="form-control">
+                                <form:options items="${roles}" itemValue="name" itemLabel="name" />
+                            </form:select>
+                        </td>
                     </div>
                 </sec:authorize>
                 <button type="submit" class="btn btn-default">Submit</button>

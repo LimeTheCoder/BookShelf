@@ -1,8 +1,8 @@
 package com.limethecoder.data.dto;
 
 
-import com.limethecoder.controller.validation.PasswordMatches;
-import com.limethecoder.controller.validation.ValidImage;
+import com.limethecoder.util.validation.PasswordMatches;
+import com.limethecoder.util.validation.ValidImage;
 import com.limethecoder.data.domain.Role;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.web.multipart.MultipartFile;

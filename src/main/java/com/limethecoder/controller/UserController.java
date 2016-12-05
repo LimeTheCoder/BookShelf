@@ -3,7 +3,9 @@ package com.limethecoder.controller;
 import com.limethecoder.data.domain.Role;
 import com.limethecoder.data.domain.User;
 import com.limethecoder.data.dto.UserDto;
+import com.limethecoder.data.service.RoleService;
 import com.limethecoder.data.service.UserService;
+import com.limethecoder.util.editor.RoleEditor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,10 +15,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -29,12 +29,22 @@ import java.io.IOException;
 public class UserController {
 
     private UserService userService;
+    private RoleService roleService;
+    @Autowired
+    private RoleEditor roleEditor;
+
     private final static int PAGE_SIZE = 30;
     private final static int PAGES_ON_VIEW = 5;
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        binder.registerCustomEditor(Role.class, roleEditor);
+    }
+
     @Autowired
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @RequestMapping(method=RequestMethod.GET)
@@ -84,6 +94,10 @@ public class UserController {
         model.addAttribute("user", userDto);
         model.addAttribute("title", "Create new account");
 
+        if(authentication != null) {
+            model.addAttribute("roles", roleService.findAll());
+        }
+
         return "registration";
     }
 
@@ -122,6 +136,7 @@ public class UserController {
 
         model.addAttribute("user", userDto);
         model.addAttribute("title", "Create new account");
+        model.addAttribute("roles", roleService.findAll());
 
         return "registration";
     }
