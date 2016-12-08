@@ -5,6 +5,7 @@ import com.limethecoder.data.domain.User;
 import com.limethecoder.data.repository.RoleRepository;
 import com.limethecoder.data.repository.UserRepository;
 import com.limethecoder.data.service.UserService;
+import com.limethecoder.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,6 +34,8 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
             return null;
         }
 
+        savePhoto(user);
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
         if(user.getRoles() == null || user.getRoles().isEmpty()) {
@@ -43,7 +46,35 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
     }
 
     @Override
+    public User update(User user) {
+        savePhoto(user);
+        return userRepository.saveAndFlush(user);
+    }
+
+    @Override
+    public void delete(String login) {
+        User user = userRepository.findOne(login);
+        FileUtil.removeFileIfExists(user.getPhotoUrl());
+        userRepository.delete(login);
+    }
+
+    @Override
     protected JpaRepository<User, String> getRepository() {
         return userRepository;
+    }
+
+    private void savePhoto(User user) {
+        final String ICON_PREFIX = "_icon";
+        if(user.getPhoto() != null && !user.getPhoto().isEmpty()) {
+            String[] parts = user.getPhoto().getOriginalFilename()
+                    .split("\\.");
+
+            String fileExtension = parts[parts.length - 1];
+            String filename = user.getLogin() + ICON_PREFIX +
+                    "." + fileExtension;
+
+            FileUtil.saveFile(user.getPhoto(), filename);
+            user.setPhotoUrl(filename);
+        }
     }
 }

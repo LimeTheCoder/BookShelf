@@ -4,7 +4,7 @@ import com.limethecoder.data.domain.Role;
 import com.limethecoder.data.domain.User;
 import com.limethecoder.data.service.RoleService;
 import com.limethecoder.data.service.UserService;
-import com.limethecoder.util.Util;
+import com.limethecoder.util.FileUtil;
 import com.limethecoder.util.editor.RoleEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -108,12 +109,6 @@ public class UserController {
             return "user_details";
         }
 
-        if (user.getPhoto() != null && !user.getPhoto().isEmpty()
-                && !user.getPhotoUrl().equals(user.getPhoto().getOriginalFilename())) {
-            Util.saveFile(user.getPhoto(), user.getPhoto().getOriginalFilename());
-            user.setPhotoUrl(user.getPhoto().getOriginalFilename());
-        }
-
         userService.update(user);
 
         return "redirect:/users";
@@ -165,11 +160,6 @@ public class UserController {
         }
 
         if(!result.hasErrors()) {
-            if(user.getPhoto() != null && !user.getPhoto().isEmpty()) {
-                Util.saveFile(user.getPhoto(), user.getPhoto().getOriginalFilename());
-                user.setPhotoUrl(user.getPhoto().getOriginalFilename());
-            }
-
             user.setEnabled(true);
 
             String rawPass = user.getPassword();

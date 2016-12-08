@@ -8,11 +8,11 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 
-public class Util {
+public class FileUtil {
     private static final Logger logger = LoggerFactory
-            .getLogger(Util.class);
-    public final static String FILE_DIR = "files";
-    public final static String ROOT_PATH = System.getProperty("catalina.home") +
+            .getLogger(FileUtil.class);
+    private final static String FILE_DIR = "files";
+    private final static String ROOT_PATH = System.getProperty("catalina.home") +
             File.separator + FILE_DIR;
 
     public static void saveFile(MultipartFile file, String filename) {
@@ -24,6 +24,8 @@ public class Util {
             }
 
             String path = getFullPath(filename);
+
+            removeFileIfExists(path);
 
             try {
                 file.transferTo(new File(path));
@@ -37,5 +39,15 @@ public class Util {
 
     public static String getFullPath(String filename) {
         return ROOT_PATH + File.separator + filename;
+    }
+
+    public static boolean removeFileIfExists(String filename) {
+        if(filename == null || filename.isEmpty()) {
+            return false;
+        }
+
+        File file = new File(getFullPath(filename));
+
+        return file.exists() && file.delete();
     }
 }
