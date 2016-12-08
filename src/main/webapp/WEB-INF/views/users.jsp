@@ -25,84 +25,76 @@
 <c:url var="nextUrl" value="/users?page=${current + 1}" />
 
 <div class="panel panel-default">
-    <c:choose>
-        <c:when test="${not empty error}">
-            <div class="alert alert-danger">
-                <strong>Error!</strong> ${error}
-            </div>
-        </c:when>
-        <c:otherwise>
-            <div class="container">
-                <table class="table table-hover table-responsive">
-                    <thead>
-                    <tr>
-                        <th>Login</th>
-                        <th>Name</th>
-                        <th>Surname</th>
-                        <th>City</th>
-                        <th>Photo url</th>
-                        <th>Roles</th>
-                        <th>Is enabled</th>
+    <div class="container">
+        <table class="table table-hover table-responsive">
+            <thead>
+            <tr>
+                <th>Login</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>City</th>
+                <th>Photo url</th>
+                <th>Roles</th>
+                <th>Is enabled</th>
+            </tr>
+            </thead>
+            <tbody>
+                <c:forEach items="${users.content}" var="user" >
+                    <tr class='clickable-row' data-href=<c:url value="/" />>
+                        <td><c:out value="${user.login}" /></td>
+                        <td><c:out value="${user.name}" /></td>
+                        <td><c:out value="${user.surname}" /></td>
+                        <td><c:out value="${user.city}" /></td>
+                        <td><c:out value="${user.photoUrl}" /></td>
+                        <td><c:out value="${user.printRoles()}" /></td>
+                        <c:choose>
+                            <c:when test="${user.enabled}">
+                                <td><span class="glyphicon glyphicon-ok-sign text-success"></span></td>
+                            </c:when>
+                            <c:otherwise>
+                                <td><span class="glyphicon glyphicon-minus-sign text-danger"></span></td>
+                            </c:otherwise>
+                        </c:choose>
                     </tr>
-                    </thead>
-                    <tbody>
-                        <c:forEach items="${users.content}" var="user" >
-                            <tr class='clickable-row' data-href=<c:url value="/" />>
-                                <td><c:out value="${user.login}" /></td>
-                                <td><c:out value="${user.name}" /></td>
-                                <td><c:out value="${user.surname}" /></td>
-                                <td><c:out value="${user.city}" /></td>
-                                <td><c:out value="${user.photoUrl}" /></td>
-                                <td><c:out value="${user.printRoles()}" /></td>
-                                <c:choose>
-                                    <c:when test="${user.enabled}">
-                                        <td><span class="glyphicon glyphicon-ok-sign text-success"></span></td>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <td><span class="glyphicon glyphicon-minus-sign text-danger"></span></td>
-                                    </c:otherwise>
-                                </c:choose>
-                            </tr>
-                        </c:forEach>
-                    </tbody>
-                </table>
+                </c:forEach>
+            </tbody>
+        </table>
 
-                <div class="container">
-                    <div class="span12">
-                        <a type="button" class="btn btn-primary" name="add_button"
-                           href="${pageContext.request.contextPath}/users/registration">Create
-                        </a>
-                    </div>
-                </div>
-
-                <div class="inner">
-                    <ul class="pagination">
-                        <c:if test="${current != 1}">
-                            <li><a href="${firstUrl}">&lt;&lt;</a></li>
-                            <li><a href="${prevUrl}">&lt;</a></li>
-                        </c:if>
-
-                        <c:forEach var="i" begin="${begin}" end="${end}">
-                            <c:url var="pageUrl" value="/users?page=${i}" />
-                            <c:choose>
-                                <c:when test="${i == current}">
-                                    <li class="active"><a href="${pageUrl}"><c:out value="${i}" /></a></li>
-                                </c:when>
-                                <c:otherwise>
-                                    <li><a href="${pageUrl}"><c:out value="${i}" /></a></li>
-                                </c:otherwise>
-                            </c:choose>
-                        </c:forEach>
-
-                        <c:if test="${current != users.totalPages}">
-                            <li><a href="${nextUrl}">&gt;</a></li>
-                            <li><a href="${lastUrl}">&gt;&gt;</a></li>
-                        </c:if>
-                    </ul>
-                </div>
+        <div class="container">
+            <div class="span12">
+                <a type="button" class="btn btn-primary" name="add_button"
+                   href="${pageContext.request.contextPath}/users/registration">Create
+                </a>
             </div>
-        </c:otherwise>
-    </c:choose>
+        </div>
+
+        <div class="inner">
+            <ul class="pagination">
+                <c:if test="${current != 1}">
+                    <li><a href="${firstUrl}">&lt;&lt;</a></li>
+                    <li><a href="${prevUrl}">&lt;</a></li>
+                </c:if>
+
+                <c:forEach var="i" begin="${begin}" end="${end}">
+                    <c:url var="pageUrl" value="/users?page=${i}" />
+                    <c:choose>
+                        <c:when test="${i == current}">
+                            <li class="active"><a href="${pageUrl}"><c:out value="${i}" /></a></li>
+                        </c:when>
+                        <c:otherwise>
+                            <li><a href="${pageUrl}"><c:out value="${i}" /></a></li>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
+
+                <c:if test="${current != users.totalPages}">
+                    <li><a href="${nextUrl}">&gt;</a></li>
+                    <li><a href="${lastUrl}">&gt;&gt;</a></li>
+                </c:if>
+            </ul>
+        </div>
+    </div>
+
 <script src="${pageContext.request.contextPath}/webjars/jquery/3.1.1/jquery.min.js"></script>
 <script src="${pageContext.request.contextPath}/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js"></script>
 <script>

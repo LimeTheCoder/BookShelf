@@ -4,7 +4,10 @@ import com.limethecoder.data.domain.Role;
 import com.limethecoder.data.domain.User;
 import com.limethecoder.data.service.RoleService;
 import com.limethecoder.data.service.UserService;
+import com.limethecoder.util.Util;
 import com.limethecoder.util.editor.RoleEditor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,15 +22,17 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.io.File;
-import java.io.IOException;
 
 @Controller
 @RequestMapping("/users")
 public class UserController {
 
+    private static final Logger logger = LoggerFactory
+            .getLogger(UserController.class);
+
     private UserService userService;
     private RoleService roleService;
+
     @Autowired
     private RoleEditor roleEditor;
 
@@ -56,8 +61,8 @@ public class UserController {
             int end = Math.min(begin + PAGES_ON_VIEW - 1, page.getTotalPages());
 
             if(pageNumber > end) {
-                model.addAttribute("error", "Page number out of range");
-                return "users";
+                model.addAttribute("message", "Page number out of range");
+                return "error";
             }
 
             if(end - pageNumber < PAGES_ON_VIEW / 2) {
@@ -70,7 +75,8 @@ public class UserController {
             model.addAttribute("users", page);
 
         } else {
-            model.addAttribute("error", "Page number can't be less that 1");
+            model.addAttribute("message", "Page number can't be less that 1");
+            return "error";
         }
 
         return "users";
@@ -83,7 +89,10 @@ public class UserController {
             model.addAttribute("message", "No user with login " + login);
             return "error";
         }
+
         model.addAttribute("user", user);
+        model.addAttribute("roles", roleService.findAll());
+
         return "user_details";
     }
     @RequestMapping(value = "/{login}", method = RequestMethod.POST)
@@ -129,7 +138,9 @@ public class UserController {
         }
 
         if(!result.hasErrors()) {
-            saveImage(userInfo, request);
+            Util.saveFile(userInfo.getPhoto(), userInfo.getPhoto().getOriginalFilename());
+
+            userInfo.setPhotoUrl(userInfo.getPhoto().getOriginalFilename());
             userInfo.setEnabled(true);
 
             User user = userService.add(userInfo);
@@ -139,7 +150,7 @@ public class UserController {
                     try {
                         request.login(userInfo.getLogin(), userInfo.getPassword());
                     } catch (ServletException e) {
-                        System.out.println("Unable to authenticate user" + e.getMessage());
+                        logger.error("Unable to authenticate user" + e.getMessage());
                     }
                     return "redirect:/";
                 }
@@ -155,21 +166,5 @@ public class UserController {
         model.addAttribute("roles", roleService.findAll());
 
         return "registration";
-    }
-
-    private void saveImage(User user, HttpServletRequest request) {
-        if(user.getPhoto() != null && !user.getPhoto().isEmpty()) {
-            String realPath = request.getServletContext().getRealPath("/") +
-                    user.getPhoto().getOriginalFilename();
-            try {
-                user.getPhoto().transferTo(new File(realPath));
-                user.setPhotoUrl("/" +
-                        user.getPhoto().getOriginalFilename());
-                System.out.println("File saved: " + realPath);
-
-            } catch (IOException e) {
-                System.out.println("Cannot save file " + e.getMessage());
-            }
-        }
     }
 }
