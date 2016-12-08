@@ -95,12 +95,39 @@ public class UserController {
 
         return "user_details";
     }
-    @RequestMapping(value = "/{login}", method = RequestMethod.POST)
-    public String userEdit(@PathVariable String login,
-                           Model model,
+    @RequestMapping(value = "/{login}", method = RequestMethod.POST, params = "edit_btn")
+    public String editUser(Model model,
                            @ModelAttribute("user") @Valid User user,
                            BindingResult result) {
-        return "user_details";
+
+        if (result.hasErrors()) {
+            logger.info(result.toString());
+            model.addAttribute("user", user);
+            model.addAttribute("roles", roleService.findAll());
+
+            return "user_details";
+        }
+
+        if (user.getPhoto() != null && !user.getPhoto().isEmpty()
+                && !user.getPhotoUrl().equals(user.getPhoto().getOriginalFilename())) {
+            Util.saveFile(user.getPhoto(), user.getPhoto().getOriginalFilename());
+            user.setPhotoUrl(user.getPhoto().getOriginalFilename());
+        }
+
+        userService.update(user);
+
+        return "redirect:/users";
+    }
+
+
+    @RequestMapping(value = "/{login}", method = RequestMethod.POST, params = "delete_btn")
+    public String deleteUser(@PathVariable String login, Model model) {
+        if (userService.findOne(login) == null) {
+            model.addAttribute("message", "No user with login " + login);
+            return "error";
+        }
+        userService.delete(login);
+        return "redirect:/users";
     }
 
     @RequestMapping(path = "/registration", method = RequestMethod.GET)
@@ -126,7 +153,7 @@ public class UserController {
 
     @RequestMapping(path = "/registration", method = RequestMethod.POST)
     public String registerUser(
-            @ModelAttribute("user") @Valid User userInfo,
+            @ModelAttribute("user") @Valid User user,
             BindingResult result, HttpServletRequest request,
             Model model, Authentication authentication) {
 
@@ -138,17 +165,21 @@ public class UserController {
         }
 
         if(!result.hasErrors()) {
-            Util.saveFile(userInfo.getPhoto(), userInfo.getPhoto().getOriginalFilename());
+            if(user.getPhoto() != null && !user.getPhoto().isEmpty()) {
+                Util.saveFile(user.getPhoto(), user.getPhoto().getOriginalFilename());
+                user.setPhotoUrl(user.getPhoto().getOriginalFilename());
+            }
 
-            userInfo.setPhotoUrl(userInfo.getPhoto().getOriginalFilename());
-            userInfo.setEnabled(true);
+            user.setEnabled(true);
 
-            User user = userService.add(userInfo);
+            String rawPass = user.getPassword();
+
+            user = userService.add(user);
             if(user != null) {
                 /* if user is not authenticated, then log in user */
                 if(authentication == null) {
                     try {
-                        request.login(userInfo.getLogin(), userInfo.getPassword());
+                        request.login(user.getLogin(), rawPass);
                     } catch (ServletException e) {
                         logger.error("Unable to authenticate user" + e.getMessage());
                     }
@@ -161,8 +192,7 @@ public class UserController {
             }
         }
 
-        model.addAttribute("user", userInfo);
-        model.addAttribute("title", "Create new account");
+        model.addAttribute("user", user);
         model.addAttribute("roles", roleService.findAll());
 
         return "registration";

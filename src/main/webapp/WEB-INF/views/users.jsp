@@ -40,7 +40,8 @@
             </thead>
             <tbody>
                 <c:forEach items="${users.content}" var="user" >
-                    <tr class='clickable-row' data-href=<c:url value="/" />>
+                    <tr class='clickable-row'
+                        data-href=<c:url value="/users/${user.login}" />>
                         <td><c:out value="${user.login}" /></td>
                         <td><c:out value="${user.name}" /></td>
                         <td><c:out value="${user.surname}" /></td>

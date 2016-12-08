@@ -44,6 +44,10 @@
                         </div>
                     </c:if>
                 </div>
+
+                <form:hidden path="password" />
+                <form:hidden path="photoUrl" />
+
                 <div class="form-group">
                     <c:set var="cityErrors"><form:errors path="city"/></c:set>
                     <label>City:</label>
@@ -57,9 +61,14 @@
                 </div>
                 <div class="form-group">
                     <c:set var="photoErrors"><form:errors path="photo"/></c:set>
-                    <label>Photo: </label>
+                    <form:label path="photo">Photo:</form:label>
 
-                    <td><form:input path="photo" value="" type="file" class="form-control" /></td>
+                    <td><label class="btn btn-default btn-file">
+                        Browse <form:input path="photo" style="display: none;"
+                                                type="file" class="form-control"
+                                                onchange="$('#upload-file-info').html($(this).val());"/>
+                        <span class='label label-info' id="upload-file-info">${user.photoUrl}</span>
+                    </label></td>
                     <c:if test="${not empty photoErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${photoErrors}
