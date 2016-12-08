@@ -1,24 +1,54 @@
 package com.limethecoder.data.domain;
 
+import com.limethecoder.util.validation.PasswordMatches;
+import com.limethecoder.util.validation.ValidImage;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Entity
+@PasswordMatches
 public class User {
     @Id
+    @NotNull
+    @NotEmpty
+    @Size(min = 4, max=50)
     private String login;
 
     @Column(length = 60)
+    @NotNull
+    @NotEmpty
+    @Size(min = 6, max = 60)
     private String password;
 
+    @NotNull
+    @NotEmpty
+    @Size(max=50)
     private String name;
 
+    @NotNull
+    @NotEmpty
+    @Size(max = 50)
     private String surname;
 
+    @NotNull
+    @NotEmpty
+    @Size(max = 50)
     private String city;
 
     @Column(name="photo_url")
     private String photoUrl;
+
+    @Transient
+    private String matchingPassword;
+
+    @Transient
+    @ValidImage
+    private MultipartFile photo;
 
     private boolean enabled;
 
@@ -109,5 +139,21 @@ public class User {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getMatchingPassword() {
+        return matchingPassword;
+    }
+
+    public void setMatchingPassword(String matchingPassword) {
+        this.matchingPassword = matchingPassword;
+    }
+
+    public MultipartFile getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(MultipartFile photo) {
+        this.photo = photo;
     }
 }

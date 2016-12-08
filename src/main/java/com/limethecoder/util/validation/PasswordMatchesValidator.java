@@ -1,7 +1,7 @@
 package com.limethecoder.util.validation;
 
 
-import com.limethecoder.data.dto.UserDto;
+import com.limethecoder.data.domain.User;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
@@ -14,9 +14,10 @@ public class PasswordMatchesValidator
     }
     @Override
     public boolean isValid(Object obj, ConstraintValidatorContext context) {
-        if(obj != null && obj instanceof UserDto) {
-            UserDto user = (UserDto) obj;
-            return user.getPassword().equals(user.getMatchingPassword());
+        if(obj != null && obj instanceof User) {
+            User user = (User) obj;
+            return user.getMatchingPassword() == null ||
+                    user.getPassword().equals(user.getMatchingPassword());
         }
 
         return false;

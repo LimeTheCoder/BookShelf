@@ -2,7 +2,6 @@ package com.limethecoder.data.service.impl;
 
 
 import com.limethecoder.data.domain.User;
-import com.limethecoder.data.dto.UserDto;
 import com.limethecoder.data.repository.RoleRepository;
 import com.limethecoder.data.repository.UserRepository;
 import com.limethecoder.data.service.UserService;
@@ -29,45 +28,22 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
     }
 
     @Override
-    public User add(User obj) {
-        if(userRepository.exists(obj.getLogin())) {
+    public User add(User user) {
+        if(userRepository.exists(user.getLogin())) {
             return null;
         }
 
-        obj.setPassword(passwordEncoder.encode(obj.getPassword()));
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
 
-        return userRepository.saveAndFlush(obj);
+        if(user.getRoles() == null || user.getRoles().isEmpty()) {
+            user.setRoles(Arrays.asList(roleRepository.findOne("USER")));
+        }
+
+        return userRepository.saveAndFlush(user);
     }
 
     @Override
     protected JpaRepository<User, String> getRepository() {
         return userRepository;
-    }
-
-    @Override
-    public User registerNewUser(UserDto userDto) {
-        if(userRepository.exists(userDto.getLogin())) {
-            return null;
-        }
-
-        User user = new User();
-        user.setLogin(userDto.getLogin());
-        user.setName(userDto.getName());
-        user.setSurname(userDto.getSurname());
-        user.setCity(userDto.getCity());
-        user.setEnabled(true);
-        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
-
-        if(userDto.getRoles() == null || userDto.getRoles().isEmpty()) {
-            user.setRoles(Arrays.asList(roleRepository.findOne("USER")));
-        } else {
-            user.setRoles(userDto.getRoles());
-        }
-
-        if(userDto.getPhotoUrl() != null) {
-            user.setPhotoUrl(userDto.getPhotoUrl());
-        }
-
-        return userRepository.saveAndFlush(user);
     }
 }
