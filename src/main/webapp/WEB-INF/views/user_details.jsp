@@ -8,30 +8,19 @@
 <%@ page session="false"%>
 <html>
 <head>
-    <title>Welcome</title>
+    <title>User page</title>
     <link rel='stylesheet'
           href='${pageContext.request.contextPath}/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css'>
 </head>
-
 <body>
-<div class="page-header">
-    <h1>Create user account</h1>
-</div>
 
 <div class="container">
     <div class="row">
         <div class="col-sm-6">
             <form:form modelAttribute="user" method="POST" enctype="multipart/form-data" class="form-vertical">
-                <c:set var="loginErrors"><form:errors path="login"/></c:set>
                 <div class="form-group">
                     <label>Login:</label>
-                    <td><form:input path="login" class="form-control" value="" /></td>
-
-                    <c:if test="${not empty loginErrors}">
-                        <div class="alert alert-danger">
-                            <strong>Error!</strong> ${loginErrors}
-                        </div>
-                    </c:if>
+                    <td><form:input path="login" class="form-control" value="" disabled="true"/></td>
                 </div>
                 <div class="form-group">
                     <c:set var="nameErrors"><form:errors path="name"/></c:set>
@@ -77,44 +66,32 @@
                         </div>
                     </c:if>
                 </div>
-                <div class="form-group">
-                    <c:set var="passwordErrors"><form:errors path="password"/></c:set>
-                    <label>Password:</label>
 
+                <div class="form-group">
+                    <form:label path="roles">Roles:</form:label>
                     <td>
-                        <form:input path="password" value="" type="password" class="form-control" /></td>
-                    <c:if test="${not empty passwordErrors}">
-                        <div class="alert alert-danger">
-                            <strong>Error!</strong> ${passwordErrors}
-                        </div>
-                    </c:if>
+                        <form:select path="roles" multiple="true" class="form-control">
+                            <form:options items="${roles}" itemValue="name" itemLabel="name" />
+                        </form:select>
+                    </td>
                 </div>
-                <div class="form-group">
-                    <c:set var="Errors"><form:errors/></c:set>
-                    <label>Confirm password:</label>
 
-                    <td><form:input path="matchingPassword" value="" type="password" class="form-control" /></td>
-                    <c:if test="${not empty Errors}">
-                        <div class="alert alert-danger">
-                            <strong>Error!</strong> ${Errors}
-                        </div>
-                    </c:if>
+                <div class="form-group">
+                    <label>Is enabled:</label>
+                    <form:checkbox path="enabled" />
                 </div>
-                <sec:authorize access="hasRole('ADMIN')">
-                    <div class="form-group">
-                        <form:label path="roles">Roles:</form:label>
-                        <td>
-                            <form:select path="roles" multiple="true" class="form-control">
-                                <form:options items="${roles}" itemValue="name" itemLabel="name" />
-                            </form:select>
-                        </td>
+
+                <div class="form-group">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary" name="edit_btn">Save</button>
+                        <button type="submit" class="btn btn-primary" name="delete_btn">Delete</button>
                     </div>
-                </sec:authorize>
-                <button type="submit" class="btn btn-default">Submit</button>
+                </div>
             </form:form>
         </div>
     </div>
 </div>
+
 <script src="${pageContext.request.contextPath}/webjars/jquery/3.1.1/jquery.min.js"></script>
 <script src="${pageContext.request.contextPath}/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js"></script>
 </body>

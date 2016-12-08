@@ -3,8 +3,10 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <html>
 <head>
-    <link rel='stylesheet' href='/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css'>
-    <link rel='stylesheet' href='/webjars/bootstrap/3.3.7-1/css/bootstrap-theme.min.css'>
+    <link rel='stylesheet'
+          href='${pageContext.request.contextPath}/webjars/bootstrap/3.3.7-1/css/bootstrap.min.css'>
+    <link rel='stylesheet'
+          href='${pageContext.request.contextPath}/webjars/bootstrap/3.3.7-1/css/bootstrap-theme.min.css'>
 
     <title>Users list</title>
 
@@ -45,25 +47,33 @@
                     </thead>
                     <tbody>
                         <c:forEach items="${users.content}" var="user" >
-                        <tr class='clickable-row' data-href=<c:url value="/" />>
-                            <td><c:out value="${user.login}" /></td>
-                            <td><c:out value="${user.name}" /></td>
-                            <td><c:out value="${user.surname}" /></td>
-                            <td><c:out value="${user.city}" /></td>
-                            <td><c:out value="${user.photoUrl}" /></td>
-                            <td><c:out value="${user.printRoles()}" /></td>
-                            <c:choose>
-                                <c:when test="${user.enabled}">
-                                    <td><span class="glyphicon glyphicon-ok-sign text-success"></span></td>
-                                </c:when>
-                                <c:otherwise>
-                                    <td><span class="glyphicon glyphicon-minus-sign text-danger"></span></td>
-                                </c:otherwise>
-                            </c:choose>
-                        </tr>
+                            <tr class='clickable-row' data-href=<c:url value="/" />>
+                                <td><c:out value="${user.login}" /></td>
+                                <td><c:out value="${user.name}" /></td>
+                                <td><c:out value="${user.surname}" /></td>
+                                <td><c:out value="${user.city}" /></td>
+                                <td><c:out value="${user.photoUrl}" /></td>
+                                <td><c:out value="${user.printRoles()}" /></td>
+                                <c:choose>
+                                    <c:when test="${user.enabled}">
+                                        <td><span class="glyphicon glyphicon-ok-sign text-success"></span></td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td><span class="glyphicon glyphicon-minus-sign text-danger"></span></td>
+                                    </c:otherwise>
+                                </c:choose>
+                            </tr>
                         </c:forEach>
                     </tbody>
                 </table>
+
+                <div class="container">
+                    <div class="span12">
+                        <a type="button" class="btn btn-primary" name="add_button"
+                           href="${pageContext.request.contextPath}/users/registration">Create
+                        </a>
+                    </div>
+                </div>
 
                 <div class="inner">
                     <ul class="pagination">
@@ -93,8 +103,8 @@
             </div>
         </c:otherwise>
     </c:choose>
-<script src="/webjars/jquery/3.1.1/jquery.min.js"></script>
-<script src="/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js"></script>
+<script src="${pageContext.request.contextPath}/webjars/jquery/3.1.1/jquery.min.js"></script>
+<script src="${pageContext.request.contextPath}/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js"></script>
 <script>
     jQuery(document).ready(function($) {
         $(".clickable-row").click(function() {

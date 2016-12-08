@@ -4,6 +4,6 @@
     <title>Error page</title>
 </head>
 <body>
-Something went wrong
+${message}
 </body>
 </html>
