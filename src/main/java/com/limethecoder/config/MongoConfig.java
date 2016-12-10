@@ -1,8 +1,11 @@
 package com.limethecoder.config;
 
+import com.limethecoder.data.service.UserService;
+import com.limethecoder.util.converter.BookReadConverter;
 import com.limethecoder.util.converter.BookWriteConverter;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -20,6 +23,9 @@ import java.util.List;
 @EnableMongoRepositories("com.limethecoder.data.repository")
 public class MongoConfig extends AbstractMongoConfiguration {
 
+    @Autowired
+    private UserService userService;
+
     @Override
     protected String getDatabaseName() {
         return "bookshelf";
@@ -35,6 +41,7 @@ public class MongoConfig extends AbstractMongoConfiguration {
     public CustomConversions customConversions() {
         List<Converter<?, ?>> converters = new ArrayList<>();
         converters.add(new BookWriteConverter());
+        converters.add(new BookReadConverter(userService));
         return new CustomConversions(converters);
     }
 }

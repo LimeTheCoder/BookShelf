@@ -1,8 +1,11 @@
 package com.limethecoder.data.domain;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 
@@ -11,26 +14,42 @@ public class Book {
     @Id
     private String id;
 
+    @NotNull
+    @NotEmpty
+    @Size(min = 4, max=50)
     private String title;
 
+    @NotNull
+    @NotEmpty
+    @Size(min = 4, max=250)
     private String description;
 
+    @Size
     private int pagesCnt;
 
+    @Size(min = 500, max=2016)
     private int publishYear;
 
     private String coverUrl;
 
+    @NotNull
+    @NotEmpty
     private Publisher publisher;
 
+    @NotNull
+    @NotEmpty
     private List<Author> authors;
 
     private List<Review> reviews;
 
+    @Size
     private long rateCnt;
 
+    @Size
     private long rateValue;
 
+    @NotNull
+    @NotEmpty
     private List<String> genres;
 
     public long getRateCnt() {
@@ -132,5 +151,20 @@ public class Book {
     @Override
     public String toString() {
         return title;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Book book = (Book) o;
+
+        return id.equals(book.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

@@ -75,6 +75,9 @@ public class HomeController {
             book.setPublisher(publisher);
             book.setGenres(Arrays.asList("detective", "science-fiction"));
             bookService.add(book);
+        } else {
+            Book book = bookService.findAll().get(0);
+            System.out.println(book.getReviews().get(0).getUser().getLogin());
         }
         return "home";
     }

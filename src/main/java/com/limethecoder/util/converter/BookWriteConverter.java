@@ -22,22 +22,27 @@ public class BookWriteConverter implements Converter<Book, DBObject> {
         dbo.put("title", book.getTitle());
         dbo.put("genres", book.getGenres());
         dbo.put("publishYear", book.getPublishYear());
-        dbo.put("coverUrl", book.getCoverUrl());
         dbo.put("pagesCnt", book.getPagesCnt());
         dbo.put("rateCnt", book.getRateCnt());
         dbo.put("rateValue", book.getRateValue());
-        dbo.put("coverUrl", book.getCoverUrl());
         dbo.put("description", book.getDescription());
+        dbo.put("publisher", convertPublisher(book.getPublisher()));
+
         List<DBObject> authors = book.getAuthors().stream()
                 .map(this::convertAuthor)
                 .collect(Collectors.toList());
         dbo.put("authors", authors);
-        dbo.put("publisher", convertPublisher(book.getPublisher()));
 
-        List<DBObject> reviews = book.getReviews().stream()
-                .map(this::convertReview)
-                .collect(Collectors.toList());
-        dbo.put("reviews", reviews);
+        if(book.getCoverUrl() != null && !book.getCoverUrl().isEmpty()) {
+            dbo.put("coverUrl", book.getCoverUrl());
+        }
+
+        if(book.getReviews() != null && !book.getReviews().isEmpty()) {
+            List<DBObject> reviews = book.getReviews().stream()
+                    .map(this::convertReview)
+                    .collect(Collectors.toList());
+            dbo.put("reviews", reviews);
+        }
 
         return dbo;
     }
