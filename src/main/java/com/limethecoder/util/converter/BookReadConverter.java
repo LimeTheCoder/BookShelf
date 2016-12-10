@@ -5,10 +5,8 @@ import com.limethecoder.data.service.UserService;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.List;
@@ -27,6 +25,7 @@ public class BookReadConverter implements Converter<DBObject, Book> {
     @Override
     public Book convert(DBObject source) {
         Book book = new Book();
+
         book.setId(((ObjectId) source.get("_id")).toString());
         book.setTitle((String) source.get("title"));
         book.setPublishYear((Integer)source.get("publishYear"));

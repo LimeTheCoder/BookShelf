@@ -7,16 +7,12 @@ import java.util.List;
 
 public interface Service<T, ID> {
     T findOne(ID id);
-
     Page<T> findAll(Pageable pageable);
-
     T add(T entity);
-
     void delete(ID id);
-
     T update(T entity);
-
     Long count();
-
     List<T> findAll();
+    void deleteAll();
+    boolean exists(ID id);
 }

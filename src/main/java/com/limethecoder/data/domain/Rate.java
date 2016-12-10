@@ -6,9 +6,6 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-@CompoundIndexes({
-        @CompoundIndex(def = "{'userId : 1, 'bookId' : 1 }")
-})
 public class Rate {
     @Id
     private String id;
@@ -18,6 +15,14 @@ public class Rate {
     private String bookId;
 
     private int value;
+
+    public Rate() {}
+
+    public Rate(String userId, String bookId, int value) {
+        this.userId = userId;
+        this.bookId = bookId;
+        this.value = value;
+    }
 
     public String getId() {
         return id;

@@ -45,5 +45,15 @@ public abstract class AbstractMongoService<T, ID extends Serializable> implement
         getRepository().delete(id);
     }
 
+    @Override
+    public void deleteAll() {
+        getRepository().deleteAll();
+    }
+
+    @Override
+    public boolean exists(ID id) {
+        return getRepository().exists(id);
+    }
+
     protected abstract MongoRepository<T, ID> getRepository();
 }

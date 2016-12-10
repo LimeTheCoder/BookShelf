@@ -45,6 +45,16 @@ public abstract class AbstractJPAService<T, ID extends Serializable> implements 
         getRepository().delete(id);
     }
 
+    @Override
+    public void deleteAll() {
+        getRepository().deleteAll();
+    }
+
+    @Override
+    public boolean exists(ID id) {
+        return getRepository().exists(id);
+    }
+
     protected abstract JpaRepository<T, ID> getRepository();
 }
 

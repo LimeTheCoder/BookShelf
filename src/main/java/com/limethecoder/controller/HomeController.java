@@ -3,6 +3,7 @@ package com.limethecoder.controller;
 
 import com.limethecoder.data.domain.*;
 import com.limethecoder.data.service.BookService;
+import com.limethecoder.data.service.RateService;
 import com.limethecoder.data.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,6 +24,8 @@ public class HomeController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private RateService rateService;
 
     @RequestMapping(method = GET)
     public String home(Model model) {
@@ -78,6 +81,18 @@ public class HomeController {
         } else {
             Book book = bookService.findAll().get(0);
             System.out.println(book.getReviews().get(0).getUser().getLogin());
+        }
+
+        if(rateService.count() == 0) {
+            Book book = bookService.findAll().get(0);
+            User user = userService.findAll().get(1);
+            rateService.rate(user.getLogin(), book.getId(), 5);
+        } else {
+            Book book = bookService.findAll().get(0);
+            User user = userService.findAll().get(1);
+
+            Rate rate = rateService.findRate(user.getLogin(), book.getId());
+            System.out.println(rate.getUserId() + rate.getValue());
         }
         return "home";
     }

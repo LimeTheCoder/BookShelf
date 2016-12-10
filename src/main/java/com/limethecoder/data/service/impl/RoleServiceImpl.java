@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RoleServiceImpl extends AbstractJPAService<Role, String> implements RoleService{
+public class RoleServiceImpl extends AbstractJPAService<Role, String> implements RoleService {
     @Autowired
     RoleRepository repository;
 
