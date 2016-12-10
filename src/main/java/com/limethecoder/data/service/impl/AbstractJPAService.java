@@ -46,11 +46,6 @@ public abstract class AbstractJPAService<T, ID extends Serializable> implements 
     }
 
     @Override
-    public void deleteAll() {
-        getRepository().deleteAll();
-    }
-
-    @Override
     public boolean exists(ID id) {
         return getRepository().exists(id);
     }

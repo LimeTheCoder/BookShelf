@@ -13,6 +13,5 @@ public interface Service<T, ID> {
     T update(T entity);
     Long count();
     List<T> findAll();
-    void deleteAll();
     boolean exists(ID id);
 }

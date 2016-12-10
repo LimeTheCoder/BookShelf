@@ -1,31 +1,45 @@
 package com.limethecoder.data.service.impl;
 
 
+import com.limethecoder.data.domain.Like;
+import com.limethecoder.data.domain.Rate;
 import com.limethecoder.data.domain.User;
-import com.limethecoder.data.repository.RoleRepository;
-import com.limethecoder.data.repository.UserRepository;
+import com.limethecoder.data.repository.*;
 import com.limethecoder.data.service.UserService;
 import com.limethecoder.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.List;
 
-@org.springframework.stereotype.Service
+@Service
+@Transactional
 public class UserServiceImpl extends AbstractJPAService<User, String>
         implements UserService {
     private UserRepository userRepository;
     private RoleRepository roleRepository;
+    private RateRepository rateRepository;
+    private BookRepository bookRepository;
+    private LikeRepository likeRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
-                           RoleRepository roleRepository) {
+                           RoleRepository roleRepository,
+                           RateRepository rateRepository,
+                           BookRepository bookRepository,
+                           LikeRepository likeRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.rateRepository = rateRepository;
+        this.bookRepository = bookRepository;
+        this.likeRepository = likeRepository;
     }
 
     @Override
@@ -55,6 +69,23 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
     public void delete(String login) {
         User user = userRepository.findOne(login);
         FileUtil.removeFileIfExists(user.getPhotoUrl());
+        List<Rate> toDelete = rateRepository.findByUserId(login);
+
+        if(toDelete != null && !toDelete.isEmpty()) {
+            toDelete.forEach((x) ->
+                    bookRepository.updateBookRate(x.getBookId(),
+                            -x.getValue(), -1)
+            );
+
+            rateRepository.delete(toDelete);
+        }
+
+        List<Like> likes = likeRepository.findByUserId(login);
+
+        if(likes != null && !likes.isEmpty()) {
+            likeRepository.delete(likes);
+        }
+
         userRepository.delete(login);
     }
 

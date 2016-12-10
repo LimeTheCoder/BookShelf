@@ -1,5 +1,6 @@
 package com.limethecoder.config;
 
+import com.limethecoder.data.repository.UserRepository;
 import com.limethecoder.data.service.UserService;
 import com.limethecoder.util.converter.BookReadConverter;
 import com.limethecoder.util.converter.BookWriteConverter;
@@ -24,7 +25,7 @@ import java.util.List;
 public class MongoConfig extends AbstractMongoConfiguration {
 
     @Autowired
-    private UserService userService;
+    private UserRepository userRepository;
 
     @Override
     protected String getDatabaseName() {
@@ -41,7 +42,7 @@ public class MongoConfig extends AbstractMongoConfiguration {
     public CustomConversions customConversions() {
         List<Converter<?, ?>> converters = new ArrayList<>();
         converters.add(new BookWriteConverter());
-        converters.add(new BookReadConverter(userService));
+        converters.add(new BookReadConverter(userRepository));
         return new CustomConversions(converters);
     }
 }

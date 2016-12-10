@@ -1,7 +1,7 @@
 package com.limethecoder.util.converter;
 
 import com.limethecoder.data.domain.*;
-import com.limethecoder.data.service.UserService;
+import com.limethecoder.data.repository.UserRepository;
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import org.bson.types.ObjectId;
@@ -14,12 +14,10 @@ import java.util.stream.Collectors;
 
 @ReadingConverter
 public class BookReadConverter implements Converter<DBObject, Book> {
-    private UserService userService;
+    private UserRepository userRepository;
 
-    public BookReadConverter() {}
-
-    public BookReadConverter(UserService userService) {
-        this.userService = userService;
+    public BookReadConverter(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -32,8 +30,12 @@ public class BookReadConverter implements Converter<DBObject, Book> {
         book.setPagesCnt((Integer)source.get("pagesCnt"));
         book.setRateCnt((Long)source.get("rateCnt"));
         book.setRateValue((Long)source.get("rateValue"));
-        book.setCoverUrl((String)source.get("coverUrl"));
         book.setDescription((String)source.get("description"));
+
+        Object obj = source.get("coverUrl");
+        if(obj != null) {
+            book.setCoverUrl((String)obj);
+        }
 
         BasicDBList dbList = (BasicDBList)source.get("genres");
 
@@ -56,13 +58,15 @@ public class BookReadConverter implements Converter<DBObject, Book> {
             book.setAuthors(authors);
         }
 
-        dbList = (BasicDBList) source.get("reviews");
+        if(source.get("reviews") != null) {
+            dbList = (BasicDBList) source.get("reviews");
 
-        if(dbList != null) {
-            List<Review> reviews = dbList.stream()
-                    .map(this::convertToReview)
-                    .collect(Collectors.toList());
-            book.setReviews(reviews);
+            if (dbList != null) {
+                List<Review> reviews = dbList.stream()
+                        .map(this::convertToReview)
+                        .collect(Collectors.toList());
+                book.setReviews(reviews);
+            }
         }
 
         return book;
@@ -119,11 +123,14 @@ public class BookReadConverter implements Converter<DBObject, Book> {
         Review review = new Review();
         review.setType((String)source.get("type"));
         review.setText((String)source.get("text"));
-        review.setDate((Date)source.get("date"));
 
-        String userLogin = (String)source.get("user");
+        if(source.get("date") != null) {
+            review.setDate((Date) source.get("date"));
+        }
+
+        Object userLogin = source.get("user");
         if(userLogin != null) {
-            User user = userService.findOne(userLogin);
+            User user = userRepository.findOne((String)userLogin);
             review.setUser(user);
         }
 

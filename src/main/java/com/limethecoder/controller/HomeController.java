@@ -16,5 +16,4 @@ public class HomeController {
         model.addAttribute("message", "It's working!!");
         return "home";
     }
-
 }

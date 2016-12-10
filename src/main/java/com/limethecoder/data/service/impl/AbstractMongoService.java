@@ -46,11 +46,6 @@ public abstract class AbstractMongoService<T, ID extends Serializable> implement
     }
 
     @Override
-    public void deleteAll() {
-        getRepository().deleteAll();
-    }
-
-    @Override
     public boolean exists(ID id) {
         return getRepository().exists(id);
     }
