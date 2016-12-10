@@ -6,14 +6,18 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
-@CompoundIndexes({
-        @CompoundIndex(def = "{'userId : 1, 'bookId' : 1 }")
-})
 public class Like {
     @Id
     private String id;
     private String userId;
     private String bookId;
+
+    public Like() {}
+
+    public Like(String userId, String bookId) {
+        this.userId = userId;
+        this.bookId = bookId;
+    }
 
     public String getId() {
         return id;

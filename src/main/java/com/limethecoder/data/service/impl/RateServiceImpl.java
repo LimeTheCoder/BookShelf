@@ -2,7 +2,6 @@ package com.limethecoder.data.service.impl;
 
 import com.limethecoder.data.domain.Rate;
 import com.limethecoder.data.repository.RateRepository;
-import com.limethecoder.data.repository.interfaces.RateOperations;
 import com.limethecoder.data.service.RateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
