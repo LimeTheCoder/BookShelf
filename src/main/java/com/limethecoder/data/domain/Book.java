@@ -1,12 +1,17 @@
 package com.limethecoder.data.domain;
 
+import com.limethecoder.util.DisplayUtil;
+import com.limethecoder.util.validation.ValidImage;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
+import java.util.StringJoiner;
 
 
 @Document
@@ -51,6 +56,18 @@ public class Book {
     @NotNull
     @NotEmpty
     private List<String> genres;
+
+    @Transient
+    @ValidImage
+    private MultipartFile cover;
+
+    public MultipartFile getCover() {
+        return cover;
+    }
+
+    public void setCover(MultipartFile cover) {
+        this.cover = cover;
+    }
 
     public long getRateCnt() {
         return rateCnt;
@@ -146,6 +163,14 @@ public class Book {
 
     public void setGenres(List<String> genres) {
         this.genres = genres;
+    }
+
+    public String printAuthors() {
+        return DisplayUtil.printList(authors);
+    }
+
+    public String printGenres() {
+        return DisplayUtil.printList(genres);
     }
 
     @Override

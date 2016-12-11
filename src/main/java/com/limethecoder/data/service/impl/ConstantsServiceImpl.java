@@ -7,6 +7,9 @@ import com.limethecoder.data.service.ConstantsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class ConstantsServiceImpl implements ConstantsService {
     @Autowired
@@ -93,5 +96,24 @@ public class ConstantsServiceImpl implements ConstantsService {
         }
 
         return 0;
+    }
+
+    @Override
+    public List<String> getConstantsByType(String type) {
+        Constants constants = getInstance();
+
+        if(constants != null) {
+            if (type.equals(ConstantsService.GENRE_TYPES) &&
+                    constants.getGenres() != null) {
+                return constants.getGenres();
+            }
+
+            if (type.equals(ConstantsService.REVIEW_TYPES) &&
+                    constants.getReviewTypes() != null) {
+                return constants.getReviewTypes();
+            }
+        }
+
+        return new ArrayList<>();
     }
 }

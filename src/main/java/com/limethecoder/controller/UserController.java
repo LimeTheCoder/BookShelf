@@ -80,7 +80,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/{login}", method = RequestMethod.GET)
-    public String userDetails(@PathVariable String login, Model model) {
+    public String userDetail(@PathVariable String login, Model model) {
         User user = userService.findOne(login);
         if(user == null) {
             model.addAttribute("message", "No user with login " + login);
@@ -92,6 +92,7 @@ public class UserController {
 
         return "user_details";
     }
+
     @RequestMapping(value = "/{login}", method = RequestMethod.POST, params = "edit_btn")
     public String editUser(Model model,
                            @ModelAttribute("user") @Valid User user,

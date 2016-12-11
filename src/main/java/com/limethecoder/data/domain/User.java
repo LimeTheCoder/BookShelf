@@ -1,5 +1,6 @@
 package com.limethecoder.data.domain;
 
+import com.limethecoder.util.DisplayUtil;
 import com.limethecoder.util.validation.PasswordMatches;
 import com.limethecoder.util.validation.ValidImage;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -67,11 +68,7 @@ public class User {
     }
 
     public String printRoles() {
-        if(roles.size() == 1) {
-            return roles.get(0).toString();
-        }
-
-        return roles.toString();
+        return DisplayUtil.printList(roles);
     }
 
     public boolean isEnabled() {

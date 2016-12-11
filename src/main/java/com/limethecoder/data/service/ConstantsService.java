@@ -2,14 +2,17 @@ package com.limethecoder.data.service;
 
 import com.limethecoder.data.domain.Constants;
 
+import java.util.List;
+
 
 public interface ConstantsService {
     String GENRE_TYPES = "genres";
     String REVIEW_TYPES = "reviewsType";
 
     Constants getInstance();
-    Constants addConstant(String  element, String collection);
-    void deleteConstant(String element, String collection);
-    boolean isExistsConstant(String element, String collection);
-    long getCnt(String collection);
+    Constants addConstant(String  element, String type);
+    void deleteConstant(String element, String type);
+    boolean isExistsConstant(String element, String type);
+    long getCnt(String type);
+    List<String> getConstantsByType(String type);
 }
