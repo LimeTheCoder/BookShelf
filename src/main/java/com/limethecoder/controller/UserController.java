@@ -4,7 +4,6 @@ import com.limethecoder.data.domain.Role;
 import com.limethecoder.data.domain.User;
 import com.limethecoder.data.service.RoleService;
 import com.limethecoder.data.service.UserService;
-import com.limethecoder.util.FileUtil;
 import com.limethecoder.util.editor.RoleEditor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +17,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/admin/users")
 public class UserController {
 
     private static final Logger logger = LoggerFactory
@@ -111,7 +107,7 @@ public class UserController {
 
         userService.update(user);
 
-        return "redirect:/users";
+        return "redirect:/admin/users";
     }
 
 
@@ -122,69 +118,6 @@ public class UserController {
             return "error";
         }
         userService.delete(login);
-        return "redirect:/users";
-    }
-
-    @RequestMapping(path = "/registration", method = RequestMethod.GET)
-    public String showFormForRegistration(Model model, Authentication authentication) {
-
-        /* Prevent from creating new account to already registered user */
-        if(authentication != null &&
-                !authentication.getAuthorities()
-                        .contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-            System.out.println(authentication.getName());
-            return "redirect:/";
-        }
-
-        User user = new User();
-        model.addAttribute("user", user);
-
-        if(authentication != null) {
-            model.addAttribute("roles", roleService.findAll());
-        }
-
-        return "registration";
-    }
-
-    @RequestMapping(path = "/registration", method = RequestMethod.POST)
-    public String registerUser(
-            @ModelAttribute("user") @Valid User user,
-            BindingResult result, HttpServletRequest request,
-            Model model, Authentication authentication) {
-
-        /* Prevent from creating new account to already registered user */
-        if(authentication != null &&
-                !authentication.getAuthorities()
-                        .contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-            return "redirect:/";
-        }
-
-        if(!result.hasErrors()) {
-            user.setEnabled(true);
-
-            String rawPass = user.getPassword();
-
-            user = userService.add(user);
-            if(user != null) {
-                /* if user is not authenticated, then log in user */
-                if(authentication == null) {
-                    try {
-                        request.login(user.getLogin(), rawPass);
-                    } catch (ServletException e) {
-                        logger.error("Unable to authenticate user" + e.getMessage());
-                    }
-                    return "redirect:/";
-                }
-                return "redirect:/users";
-            } else {
-                result.rejectValue("login", "",
-                        "User with such login already exists");
-            }
-        }
-
-        model.addAttribute("user", user);
-        model.addAttribute("roles", roleService.findAll());
-
-        return "registration";
+        return "redirect:/admin/users";
     }
 }

@@ -1,6 +1,5 @@
 package com.limethecoder.data.service.impl;
 
-import com.limethecoder.data.domain.Book;
 import com.limethecoder.data.domain.Rate;
 import com.limethecoder.data.repository.BookRepository;
 import com.limethecoder.data.repository.RateRepository;
