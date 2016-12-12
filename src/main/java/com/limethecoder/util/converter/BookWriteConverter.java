@@ -6,6 +6,7 @@ import com.limethecoder.data.domain.Publisher;
 import com.limethecoder.data.domain.Review;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
+import org.bson.types.ObjectId;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.WritingConverter;
 
@@ -18,7 +19,7 @@ public class BookWriteConverter implements Converter<Book, DBObject> {
     @Override
     public DBObject convert(Book book) {
         DBObject dbo = new BasicDBObject();
-        dbo.put("_id", book.getId());
+        dbo.put("_id", new ObjectId(book.getId()));
         dbo.put("title", book.getTitle());
         dbo.put("genres", book.getGenres());
         dbo.put("publishYear", book.getPublishYear());

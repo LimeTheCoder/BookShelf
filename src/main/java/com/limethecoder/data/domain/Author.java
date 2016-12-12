@@ -1,14 +1,24 @@
 package com.limethecoder.data.domain;
 
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 public class Author {
+    @NotNull
+    @NotEmpty
+    @Size(min = 4, max=50)
     private String name;
+    @NotNull
+    @NotEmpty
+    @Size(min = 4, max=50)
     private String surname;
 
-    @Field("birth_date")
+    @DateTimeFormat(pattern = "MM/dd/yyyy")
     private Date birthDate;
 
     @Override

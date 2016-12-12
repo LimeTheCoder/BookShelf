@@ -3,6 +3,7 @@ package com.limethecoder.data.domain;
 import com.limethecoder.util.DisplayUtil;
 import com.limethecoder.util.validation.ValidImage;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.Range;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,7 +12,6 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.List;
-import java.util.StringJoiner;
 
 
 @Document
@@ -29,16 +29,15 @@ public class Book {
     @Size(min = 4, max=250)
     private String description;
 
-    @Size
+    @Range
     private int pagesCnt;
 
-    @Size(min = 500, max=2016)
+    @Range(min = 500, max = 2016)
     private int publishYear;
 
     private String coverUrl;
 
     @NotNull
-    @NotEmpty
     private Publisher publisher;
 
     @NotNull
@@ -47,10 +46,10 @@ public class Book {
 
     private List<Review> reviews;
 
-    @Size
+    @Range
     private long rateCnt;
 
-    @Size
+    @Range
     private long rateValue;
 
     @NotNull

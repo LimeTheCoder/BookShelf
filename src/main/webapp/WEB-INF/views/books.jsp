@@ -58,7 +58,7 @@
     <div class="container">
         <div class="span12">
             <a type="button" class="btn btn-primary" name="add_button"
-               href="${pageContext.request.contextPath}/admin/books/add">Create
+               href="${pageContext.request.contextPath}/admin/books/new">Create
             </a>
         </div>
     </div>

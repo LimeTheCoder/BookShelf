@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +45,8 @@ public class BookReadConverter implements Converter<DBObject, Book> {
                     .map(String::valueOf)
                     .collect(Collectors.toList());
             book.setGenres(genres);
+        } else {
+            book.setGenres(new ArrayList<>());
         }
 
         Object publisher = source.get("publisher");
@@ -56,6 +59,8 @@ public class BookReadConverter implements Converter<DBObject, Book> {
                     .map(this::convertToAuthor)
                     .collect(Collectors.toList());
             book.setAuthors(authors);
+        } else {
+            book.setAuthors(new ArrayList<>());
         }
 
         if(source.get("reviews") != null) {
@@ -66,6 +71,8 @@ public class BookReadConverter implements Converter<DBObject, Book> {
                         .map(this::convertToReview)
                         .collect(Collectors.toList());
                 book.setReviews(reviews);
+            } else {
+                book.setReviews(new ArrayList<>());
             }
         }
 

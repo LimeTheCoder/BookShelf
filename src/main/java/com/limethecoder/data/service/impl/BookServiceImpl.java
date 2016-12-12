@@ -7,6 +7,7 @@ import com.limethecoder.data.repository.BookRepository;
 import com.limethecoder.data.repository.LikeRepository;
 import com.limethecoder.data.repository.RateRepository;
 import com.limethecoder.data.service.BookService;
+import com.limethecoder.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,24 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
     }
 
     @Override
+    public Book add(Book book) {
+        saveCover(book);
+        return repository.save(book);
+    }
+
+    @Override
+    public Book update(Book book) {
+        saveCover(book);
+        return repository.save(book);
+    }
+
+    @Override
     public void delete(String bookId) {
         List<Rate> rates = rateRepository.findByBookId(bookId);
+
+        Book book = repository.findOne(bookId);
+        FileUtil.removeFileIfExists(book.getCoverUrl());
+
         if(rates != null && !rates.isEmpty()) {
             rateRepository.delete(rates);
         }
@@ -46,6 +63,21 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
         }
 
         repository.delete(bookId);
+    }
+
+    private void saveCover(Book book) {
+        final String COVER_PREFIX = "_cover";
+        if(book.getCover() != null && !book.getCover().isEmpty()) {
+            String[] parts = book.getCover().getOriginalFilename()
+                    .split("\\.");
+
+            String fileExtension = parts[parts.length - 1];
+            String filename = book.getId() + COVER_PREFIX +
+                    "." + fileExtension;
+
+            FileUtil.saveFile(book.getCover(), filename);
+            book.setCoverUrl(filename);
+        }
     }
 
     @Override
