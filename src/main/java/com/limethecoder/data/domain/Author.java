@@ -18,7 +18,7 @@ public class Author {
     @Size(min = 4, max=50)
     private String surname;
 
-    @DateTimeFormat(pattern = "MM/dd/yyyy")
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
     private Date birthDate;
 
     @Override

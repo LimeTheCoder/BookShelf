@@ -1,6 +1,5 @@
 package com.limethecoder.controller;
 
-
 import com.limethecoder.data.domain.Address;
 import com.limethecoder.data.domain.Author;
 import com.limethecoder.data.domain.Book;
@@ -39,7 +38,7 @@ public class BookController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         dateFormat.setLenient(true);
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat,true));
 
@@ -144,6 +143,8 @@ public class BookController {
         }
 
         if(!result.hasErrors()) {
+            Book old = bookService.findOne(book.getId());
+            book.setReviews(old.getReviews());
             bookService.update(book);
             return "redirect:/admin/books";
         }

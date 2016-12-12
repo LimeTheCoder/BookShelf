@@ -19,7 +19,10 @@ public class BookWriteConverter implements Converter<Book, DBObject> {
     @Override
     public DBObject convert(Book book) {
         DBObject dbo = new BasicDBObject();
-        dbo.put("_id", new ObjectId(book.getId()));
+        if(book.getId() != null && !book.getId().isEmpty()) {
+            dbo.put("_id", new ObjectId(book.getId()));
+        }
+
         dbo.put("title", book.getTitle());
         dbo.put("genres", book.getGenres());
         dbo.put("publishYear", book.getPublishYear());

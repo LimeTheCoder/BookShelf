@@ -41,7 +41,9 @@
                     </div>
                     <div class="form-group">
                         <label>BirthDate:</label>
-                        <td><form:input type="date" path="authors[${status.index}].birthDate" class="form-control" value=""/></td>
+                        <div class="controls">
+                            <form:input path="authors[${status.index}].birthDate" class="date form-control" />
+                        </div>
                     </div>
                 </c:forEach>
                 <div class="form-group">
@@ -68,6 +70,8 @@
                 </div>
 
                 <form:hidden path="coverUrl" />
+                <form:hidden path="rateCnt" />
+                <form:hidden path="rateValue" />
 
                 <div class="form-group">
                     <c:set var="publishYearErrors"><form:errors path="publishYear"/></c:set>
