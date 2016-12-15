@@ -30,7 +30,7 @@ public class BookController {
     private static final Logger logger = LoggerFactory
             .getLogger(BookController.class);
 
-    private final static int PAGE_SIZE = 30;
+    private final static int PAGE_SIZE = 20;
     private final static int PAGES_ON_VIEW = 5;
 
     private BookService bookService;

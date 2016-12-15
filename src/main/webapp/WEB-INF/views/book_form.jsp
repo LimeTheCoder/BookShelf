@@ -16,8 +16,8 @@
 
 <ol class="breadcrumb">
     <li class="breadcrumb-item"> <a href="#">Home</a></li>
-    <li class="breadcrumb-item"> <a href="<c:url value="/admin/books" />">Books</a></li>
-    <li class="breadcrumb-item active">Book</li>
+    <li class="breadcrumb-item"> <a href="<c:url value="/admin/users" />">Users</a></li>
+    <li class="breadcrumb-item active">User</li>
 </ol>
 
 <div class="container">

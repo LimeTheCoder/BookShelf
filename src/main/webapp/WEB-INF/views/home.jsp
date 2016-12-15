@@ -24,19 +24,29 @@
             margin-bottom: 0;
         }
 
+        .inner {
+            width: 50%;
+            margin: 0 auto;
+        }
+
         img.displayed {
             display: block;
             margin-left: auto;
             margin-right: auto }
 
         /* Add a gray background color and some padding to the footer */
-        .footer {
+        footer {
             background-color: #f2f2f2;
             padding: 25px;
         }
     </style>
 </head>
 <body>
+
+<c:url var="firstUrl" value="/?page=1" />
+<c:url var="lastUrl" value="/?page=${books.totalPages}" />
+<c:url var="prevUrl" value="/?page=${current - 1}" />
+<c:url var="nextUrl" value="/?page=${current + 1}" />
 
 <div class="jumbotron">
     <div class="container text-center">
@@ -71,64 +81,53 @@
     </div>
 </nav>
 
-<div class="container">
-    <div class="row">
-        <div class="col-md-3">
-            <div class="panel panel-primary clickable" data-href="<c:url value="/admin/books" />">
-                <div class="panel-heading">BLACK FRIDAY DEAL</div>
-                <div class="panel-body"><img src="/getCover/${book.id}" class="img-rounded displayed"  width="200" height="300" alt="Image"></div>
-                <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="panel panel-danger">
-                <div class="panel-heading">BLACK FRIDAY DEAL</div>
-                <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
-                <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="panel panel-success">
-                <div class="panel-heading">BLACK FRIDAY DEAL</div>
-                <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
-                <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
-            </div>
-        </div>
-            <div class="col-md-3">
-                <div class="panel panel-success">
-                    <div class="panel-heading">BLACK FRIDAY DEAL</div>
-                    <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
-                    <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
-                </div>
-            </div>
-    </div>
-</div><br>
 
-<div class="container">
-    <div class="row">
-        <div class="col-sm-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">BLACK FRIDAY DEAL</div>
-                <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
-                <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">BLACK FRIDAY DEAL</div>
-                <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
-                <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">BLACK FRIDAY DEAL</div>
-                <div class="panel-body"><img src="https://placehold.it/150x80?text=IMAGE" class="img-responsive" style="width:100%" alt="Image"></div>
-                <div class="panel-footer">Buy 50 mobiles and get a gift card</div>
-            </div>
+<c:forEach items="${books.content}" var="book" varStatus="i">
+    <c:if test="${i.index % 4 == 0}" >
+        <div class="container">
+            <div class="row">
+    </c:if>
+    <div class="col-md-3">
+        <div class="panel panel-primary clickable" data-href="<c:url value="/admin/books" />">
+            <div class="panel-heading"><c:out value="${book.title}" /></div>
+            <div class="panel-body"><img src="/getCover/${book.id}" class="img-rounded displayed"  width="200" height="300" alt="Image"></div>
+            <div class="panel-footer"><c:out value="${book.description}" /></div>
         </div>
     </div>
-</div><br><br>
+        <c:if test="${(i.index % 3 == 0 || i.index == books.content.size() - 1)}" >
+            <c:if test="${(i.index != 0 || books.content.size() == 1)}">
+                </div>
+                </div><br>
+            </c:if>
+        </c:if>
+</c:forEach>
+<br>
+
+<div class="inner">
+    <ul class="pagination">
+        <c:if test="${current != 1}">
+            <li><a href="${firstUrl}">&lt;&lt;</a></li>
+            <li><a href="${prevUrl}">&lt;</a></li>
+        </c:if>
+
+        <c:forEach var="i" begin="${begin}" end="${end}">
+            <c:url var="pageUrl" value="/?page=${i}" />
+            <c:choose>
+                <c:when test="${i == current}">
+                    <li class="active"><a href="${pageUrl}"><c:out value="${i}" /></a></li>
+                </c:when>
+                <c:otherwise>
+                    <li><a href="${pageUrl}"><c:out value="${i}" /></a></li>
+                </c:otherwise>
+            </c:choose>
+        </c:forEach>
+
+        <c:if test="${current != books.totalPages}">
+            <li><a href="${nextUrl}">&gt;</a></li>
+            <li><a href="${lastUrl}">&gt;&gt;</a></li>
+        </c:if>
+    </ul>
+</div>
 
 <footer class="container-fluid text-center">
     <p>Online Library Copyright</p>
