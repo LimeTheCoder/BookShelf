@@ -7,6 +7,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FileUtil {
     private static final Logger logger = LoggerFactory
@@ -37,6 +40,20 @@ public class FileUtil {
         }
     }
 
+    public static byte[] loadImage(String filename) {
+        String path = getFullPath(filename);
+        Path p = Paths.get(path);
+        byte[] bytes = null;
+
+        try {
+            bytes = Files.readAllBytes(p);
+        } catch (IOException e) {
+            logger.error("Cannot load file " + e.getMessage());
+        }
+
+        return bytes;
+    }
+
     public static String getFullPath(String filename) {
         return ROOT_PATH + File.separator + filename;
     }
@@ -49,5 +66,15 @@ public class FileUtil {
         File file = new File(getFullPath(filename));
 
         return file.exists() && file.delete();
+    }
+
+    public static boolean isExists(String filename) {
+        if(filename == null || filename.isEmpty()) {
+            return false;
+        }
+
+        File file = new File(getFullPath(filename));
+
+        return file.exists();
     }
 }

@@ -19,6 +19,18 @@
 </head>
 <body>
 
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">BookShelfAdmin</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="<c:url value="/admin/users" />">Users</a></li>
+            <li><a href="<c:url value="/admin/books" />">Books</a></li>
+        </ul>
+    </div>
+</nav>
+
 <c:url var="firstUrl" value="/admin/users?page=1" />
 <c:url var="lastUrl" value="/admin/users?page=${users.totalPages}" />
 <c:url var="prevUrl" value="/admin/users?page=${current - 1}" />

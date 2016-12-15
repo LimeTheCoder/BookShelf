@@ -19,6 +19,18 @@
 </head>
 <body>
 
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">BookShelfAdmin</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li><a href="<c:url value="/admin/users" />">Users</a></li>
+            <li class="active"><a href="<c:url value="/admin/books" />">Books</a></li>
+        </ul>
+    </div>
+</nav>
+
 <c:url var="firstUrl" value="/admin/books?page=1" />
 <c:url var="lastUrl" value="/admin/books?page=${books.totalPages}" />
 <c:url var="prevUrl" value="/admin/books?page=${current - 1}" />
@@ -34,6 +46,7 @@
             <th>Publisher</th>
             <th>Publish Year</th>
             <th>Reviews</th>
+            <th>Cover url</th>
             <th>Genres</th>
             <th>Rating</th>
         </tr>
@@ -47,7 +60,13 @@
                 <td><c:out value="${book.pagesCnt}" /></td>
                 <td><c:out value="${book.publisher}" /></td>
                 <td><c:out value="${book.publishYear}" /></td>
-                <td><c:out value="${book.reviews.size()}" /></td>
+                <c:if test="${not empty book.reviews }">
+                    <td><c:out value="${book.reviews.size()}" /></td>
+                </c:if>
+                <c:if test="${empty book.reviews }">
+                    <td>0</td>
+                </c:if>
+                <td><c:out value="${book.coverUrl}" /></td>
                 <td><c:out value="${book.printGenres()}" /></td>
                 <td><c:out value="${book.rateValue / book.rateCnt}" /></td>
             </tr>

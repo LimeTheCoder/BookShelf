@@ -3,6 +3,7 @@ package com.limethecoder.data.service.impl;
 import com.limethecoder.data.domain.Book;
 import com.limethecoder.data.domain.Like;
 import com.limethecoder.data.domain.Rate;
+import com.limethecoder.data.domain.User;
 import com.limethecoder.data.repository.BookRepository;
 import com.limethecoder.data.repository.LikeRepository;
 import com.limethecoder.data.repository.RateRepository;
@@ -20,6 +21,8 @@ import java.util.List;
 @Transactional
 public class BookServiceImpl extends AbstractMongoService<Book, String>
         implements BookService {
+
+    private final static String DEFAULT_COVER = "default.jpg";
 
     private BookRepository repository;
     private RateRepository rateRepository;
@@ -83,5 +86,13 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
     @Override
     protected MongoRepository<Book, String> getRepository() {
         return repository;
+    }
+
+    @Override
+    public byte[] loadCover(Book book) {
+        if(FileUtil.isExists(book.getCoverUrl())) {
+            return FileUtil.loadImage(book.getCoverUrl());
+        }
+        return FileUtil.loadImage(DEFAULT_COVER);
     }
 }

@@ -86,6 +86,10 @@ public class BookController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public String bookDetail(@PathVariable String id, Model model) {
         Book book = bookService.findOne(id);
+        if(book.getAuthors().size() < 2 ) {
+            book.getAuthors().add(new Author());
+        }
+
         model.addAttribute("editType", true);
         model.addAttribute("book", book);
         model.addAttribute("genres", constantsService.
@@ -110,6 +114,12 @@ public class BookController {
     @RequestMapping(value = "/new", method = RequestMethod.POST)
     public String addBook(@ModelAttribute("book") @Valid Book book, Model model,
                           BindingResult result) {
+        if (book.getAuthors().get(0).getName().isEmpty()) {
+            result.rejectValue("authors", "", "No authors provided");
+        } else if(book.getAuthors().get(1).getName().isEmpty()) {
+            book.getAuthors().remove(1);
+        }
+
         if(!result.hasErrors()) {
             bookService.add(book);
             return "redirect:/admin/books";

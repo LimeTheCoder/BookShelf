@@ -20,6 +20,10 @@ import java.util.List;
 @Transactional
 public class UserServiceImpl extends AbstractJPAService<User, String>
         implements UserService {
+
+    private final static String ICON_PREFIX = "_icon";
+    private final static String DEFAULT_ICON = "default.jpg";
+
     private UserRepository userRepository;
     private RoleRepository roleRepository;
     private RateRepository rateRepository;
@@ -95,7 +99,6 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
     }
 
     private void savePhoto(User user) {
-        final String ICON_PREFIX = "_icon";
         if(user.getPhoto() != null && !user.getPhoto().isEmpty()) {
             String[] parts = user.getPhoto().getOriginalFilename()
                     .split("\\.");
@@ -107,5 +110,13 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
             FileUtil.saveFile(user.getPhoto(), filename);
             user.setPhotoUrl(filename);
         }
+    }
+
+    @Override
+    public byte[] loadImage(User user) {
+        if(FileUtil.isExists(user.getPhotoUrl())) {
+            return FileUtil.loadImage(user.getPhotoUrl());
+        }
+        return FileUtil.loadImage(DEFAULT_ICON);
     }
 }

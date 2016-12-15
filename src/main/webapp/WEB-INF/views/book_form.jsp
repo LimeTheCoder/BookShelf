@@ -14,9 +14,19 @@
 </head>
 <body>
 
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"> <a href="#">Home</a></li>
+    <li class="breadcrumb-item"> <a href="<c:url value="/admin/books" />">Books</a></li>
+    <li class="breadcrumb-item active">Book</li>
+</ol>
+
 <div class="container">
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Book</div>
+            <div class="panel-body">
             <form:form modelAttribute="book" method="POST"
                        enctype="multipart/form-data" class="form-vertical" id="book">
                 <div class="form-group">
@@ -30,22 +40,7 @@
                         </div>
                     </c:if>
                 </div>
-                <c:forEach var="author" items="${book.authors}" varStatus="status">
-                    <div class="form-group">
-                        <label>Name:</label>
-                        <td><form:input path="authors[${status.index}].name" class="form-control" value=""/></td>
-                    </div>
-                    <div class="form-group">
-                        <label>Surname:</label>
-                        <td><form:input path="authors[${status.index}].surname" class="form-control" value=""/></td>
-                    </div>
-                    <div class="form-group">
-                        <label>BirthDate:</label>
-                        <div class="controls">
-                            <form:input path="authors[${status.index}].birthDate" class="date form-control" />
-                        </div>
-                    </div>
-                </c:forEach>
+
                 <div class="form-group">
                     <c:set var="descriptionErrors"><form:errors path="description"/></c:set>
                     <label>Description:</label>
@@ -110,77 +105,107 @@
                     </td>
                 </div>
 
-                <div class="form-group">
-                    <c:set var="publisherNameErrors"><form:errors path="publisher.name"/></c:set>
-                    <label>Name:</label>
+                <c:forEach var="author" items="${book.authors}" varStatus="status">
 
-                    <td><form:input path="publisher.name" value="" class="form-control" /></td>
-                    <c:if test="${not empty publisherNameErrors}">
-                        <div class="alert alert-danger">
-                            <strong>Error!</strong> ${publisherNameErrors}
+                    <div class="panel panel-info">
+                        <div class="panel-heading">Author #${status.index + 1}</div>
+                        <div class="panel-body">
+                            <div class="form-group">
+                                <label>Name:</label>
+                                <td><form:input path="authors[${status.index}].name" class="form-control" value=""/></td>
+                            </div>
+                            <div class="form-group">
+                                <label>Surname:</label>
+                                <td><form:input path="authors[${status.index}].surname" class="form-control" value=""/></td>
+                            </div>
+                            <div class="form-group">
+                                <label>BirthDate:</label>
+                                <div class="controls">
+                                    <form:input path="authors[${status.index}].birthDate" class="date form-control" />
+                                </div>
+                            </div>
                         </div>
-                    </c:if>
-                </div>
+                    </div>
+                </c:forEach>
 
-                <div class="form-group">
-                    <c:set var="addressZipErrors"><form:errors path="publisher.address.zip"/></c:set>
-                    <label>Zip:</label>
+                <div class="panel panel-info">
+                    <div class="panel-heading">Publisher</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <c:set var="publisherNameErrors"><form:errors path="publisher.name"/></c:set>
+                            <label>Name:</label>
 
-                    <td><form:input path="publisher.address.zip" value="" class="form-control" /></td>
-                    <c:if test="${not empty addressZipErrors}">
-                        <div class="alert alert-danger">
-                            <strong>Error!</strong> ${addressZipErrors}
+                            <td><form:input path="publisher.name" value="" class="form-control" /></td>
+                            <c:if test="${not empty publisherNameErrors}">
+                                <div class="alert alert-danger">
+                                    <strong>Error!</strong> ${publisherNameErrors}
+                                </div>
+                            </c:if>
                         </div>
-                    </c:if>
-                </div>
 
-                <div class="form-group">
-                    <c:set var="addressCountryErrors"><form:errors path="publisher.address.country"/></c:set>
-                    <label>Country:</label>
+                        <div class="form-group">
+                            <c:set var="addressZipErrors"><form:errors path="publisher.address.zip"/></c:set>
+                            <label>Zip:</label>
 
-                    <td><form:input path="publisher.address.country" value="" class="form-control" /></td>
-                    <c:if test="${not empty addressCountryErrors}">
-                        <div class="alert alert-danger">
-                            <strong>Error!</strong> ${addressCountryErrors}
+                            <td><form:input path="publisher.address.zip" value="" class="form-control" /></td>
+                            <c:if test="${not empty addressZipErrors}">
+                                <div class="alert alert-danger">
+                                    <strong>Error!</strong> ${addressZipErrors}
+                                </div>
+                            </c:if>
                         </div>
-                    </c:if>
-                </div>
 
-                <div class="form-group">
-                    <c:set var="addressCityErrors"><form:errors path="publisher.address.city"/></c:set>
-                    <label>City:</label>
+                        <div class="form-group">
+                            <c:set var="addressCountryErrors"><form:errors path="publisher.address.country"/></c:set>
+                            <label>Country:</label>
 
-                    <td><form:input path="publisher.address.city" value="" class="form-control" /></td>
-                    <c:if test="${not empty addressCityErrors}">
-                        <div class="alert alert-danger">
-                            <strong>Error!</strong> ${addressCityErrors}
+                            <td><form:input path="publisher.address.country" value="" class="form-control" /></td>
+                            <c:if test="${not empty addressCountryErrors}">
+                                <div class="alert alert-danger">
+                                    <strong>Error!</strong> ${addressCountryErrors}
+                                </div>
+                            </c:if>
                         </div>
-                    </c:if>
-                </div>
 
-                <div class="form-group">
-                    <c:set var="addressStreetErrors"><form:errors path="publisher.address.street"/></c:set>
-                    <label>Street:</label>
+                        <div class="form-group">
+                            <c:set var="addressCityErrors"><form:errors path="publisher.address.city"/></c:set>
+                            <label>City:</label>
 
-                    <td><form:input path="publisher.address.street" value="" class="form-control" /></td>
-                    <c:if test="${not empty addressStreetErrors}">
-                        <div class="alert alert-danger">
-                            <strong>Error!</strong> ${addressStreetErrors}
+                            <td><form:input path="publisher.address.city" value="" class="form-control" /></td>
+                            <c:if test="${not empty addressCityErrors}">
+                                <div class="alert alert-danger">
+                                    <strong>Error!</strong> ${addressCityErrors}
+                                </div>
+                            </c:if>
                         </div>
-                    </c:if>
-                </div>
 
-                <div class="form-group">
-                    <c:set var="addressBuildingErrors"><form:errors path="publisher.address.building"/></c:set>
-                    <label>Building:</label>
+                        <div class="form-group">
+                            <c:set var="addressStreetErrors"><form:errors path="publisher.address.street"/></c:set>
+                            <label>Street:</label>
 
-                    <td><form:input path="publisher.address.building" value="" class="form-control" /></td>
-                    <c:if test="${not empty addressBuildingErrors}">
-                        <div class="alert alert-danger">
-                            <strong>Error!</strong> ${addressBuildingErrors}
+                            <td><form:input path="publisher.address.street" value="" class="form-control" /></td>
+                            <c:if test="${not empty addressStreetErrors}">
+                                <div class="alert alert-danger">
+                                    <strong>Error!</strong> ${addressStreetErrors}
+                                </div>
+                            </c:if>
                         </div>
-                    </c:if>
+
+                        <div class="form-group">
+                            <c:set var="addressBuildingErrors"><form:errors path="publisher.address.building"/></c:set>
+                            <label>Building:</label>
+
+                            <td><form:input path="publisher.address.building" value="" class="form-control" /></td>
+                            <c:if test="${not empty addressBuildingErrors}">
+                                <div class="alert alert-danger">
+                                    <strong>Error!</strong> ${addressBuildingErrors}
+                                </div>
+                            </c:if>
+                        </div>
+                    </div>
                 </div>
+            </div>
+            </div>
 
                 <div class="form-group">
                     <div class="col-sm-12">
@@ -192,6 +217,7 @@
                 </div>
             </form:form>
         </div>
+        <div class="col-md-1"></div>
     </div>
 </div>
 

@@ -14,9 +14,19 @@
 </head>
 <body>
 
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"> <a href="#">Home</a></li>
+    <li class="breadcrumb-item"> <a href="<c:url value="/admin/users" />">Users</a></li>
+    <li class="breadcrumb-item active">User</li>
+</ol>
+
 <div class="container">
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-md-1"></div>
+        <div class="col-md-10">
+            <div class="panel panel-primary">
+                <div class="panel-heading">User</div>
+                <div class="panel-body">
             <form:form modelAttribute="user" method="POST" enctype="multipart/form-data" class="form-vertical">
                 <div class="form-group">
                     <label>Login:</label>
@@ -97,7 +107,10 @@
                     </div>
                 </div>
             </form:form>
+                </div>
+            </div>
         </div>
+        <div class="col-md-1"></div>
     </div>
 </div>
 
