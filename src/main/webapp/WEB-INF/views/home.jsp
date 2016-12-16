@@ -82,25 +82,31 @@
 </nav>
 
 
-<c:forEach items="${books.content}" var="book" varStatus="i">
-    <c:if test="${i.index % 4 == 0}" >
-        <div class="container">
-            <div class="row">
-    </c:if>
-    <div class="col-md-3">
-        <div class="panel panel-primary clickable" data-href="<c:url value="/admin/books" />">
-            <div class="panel-heading"><c:out value="${book.title}" /></div>
-            <div class="panel-body"><img src="/getCover/${book.id}" class="img-rounded displayed"  width="200" height="300" alt="Image"></div>
-            <div class="panel-footer"><c:out value="${book.description}" /></div>
-        </div>
-    </div>
-        <c:if test="${(i.index % 3 == 0 || i.index == books.content.size() - 1)}" >
-            <c:if test="${(i.index != 0 || books.content.size() == 1)}">
+<div class="container">
+    <div class="row">
+        <c:forEach items="${books.content}" var="book" varStatus="i">
+            <div class="col-md-4">
+                <div class="thumbnail">
+                    <img src="/getCover/${book.id}" height="350" width="222"  alt="">
+                    <div class="caption">
+                        <h4><a href="<c:url value="/admin/books" />"><c:out value="${book.title}" /></a></h4>
+                        <p><c:out value="${book.description}" /></p>
+                    </div>
+                    <div class="ratings">
+                        <p class="pull-right">15 reviews</p>
+                        <p>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                            <span class="glyphicon glyphicon-star"></span>
+                        </p>
+                    </div>
                 </div>
-                </div><br>
-            </c:if>
-        </c:if>
-</c:forEach>
+            </div>
+        </c:forEach>
+    </div>
+</div><br>
 <br>
 
 <div class="inner">

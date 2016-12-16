@@ -22,7 +22,7 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
         implements UserService {
 
     private final static String ICON_PREFIX = "_icon";
-    private final static String DEFAULT_ICON = "default.jpg";
+    private final static String DEFAULT_ICON = "default_user.png";
 
     private UserRepository userRepository;
     private RoleRepository roleRepository;

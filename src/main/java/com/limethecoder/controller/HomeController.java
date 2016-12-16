@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
 @RequestMapping("/")
@@ -70,6 +71,21 @@ public class HomeController {
         return "home";
     }
 
+    @RequestMapping(value = "/user/{login}", method = GET)
+    public String userPage(@PathVariable String login, Model model) {
+        User user = userService.findOne(login);
+        if(user == null) {
+            model.addAttribute("message", "No user with login " + login);
+            return "error";
+        }
+        List<Book> liked = likeService.findLikedBooks(user.getLogin());
+        if(liked != null) {
+            model.addAttribute("liked", liked);
+        }
+        model.addAttribute("user", user);
+        return "user_page";
+    }
+
     @RequestMapping(value = "/getCover/{id}")
     @ResponseBody
     public byte[] getBookCover(@PathVariable String id) {
@@ -78,5 +94,15 @@ public class HomeController {
             return new byte[]{};
         }
         return bookService.loadCover(book);
+    }
+
+    @RequestMapping(value = "/getIcon/{login}")
+    @ResponseBody
+    public byte[] getUserIcon(@PathVariable String login) {
+        User user = userService.findOne(login);
+        if(user == null) {
+            return new byte[]{};
+        }
+        return userService.loadImage(user);
     }
 }
