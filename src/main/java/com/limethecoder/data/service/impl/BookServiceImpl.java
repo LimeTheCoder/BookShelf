@@ -6,7 +6,6 @@ import com.limethecoder.data.domain.Rate;
 import com.limethecoder.data.domain.User;
 import com.limethecoder.data.repository.BookRepository;
 import com.limethecoder.data.repository.LikeRepository;
-import com.limethecoder.data.repository.RateRepository;
 import com.limethecoder.data.service.BookService;
 import com.limethecoder.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,15 +24,12 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
     private final static String DEFAULT_COVER = "default.jpg";
 
     private BookRepository repository;
-    private RateRepository rateRepository;
     private LikeRepository likeRepository;
 
     @Autowired
     public BookServiceImpl(BookRepository repository,
-                           RateRepository rateRepository,
                            LikeRepository likeRepository) {
         this.repository = repository;
-        this.rateRepository = rateRepository;
         this.likeRepository = likeRepository;
     }
 
@@ -51,14 +47,8 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
 
     @Override
     public void delete(String bookId) {
-        List<Rate> rates = rateRepository.findByBookId(bookId);
-
         Book book = repository.findOne(bookId);
         FileUtil.removeFileIfExists(book.getCoverUrl());
-
-        if(rates != null && !rates.isEmpty()) {
-            rateRepository.delete(rates);
-        }
 
         List<Like> likes = likeRepository.findByBookId(bookId);
         if(likes != null && !likes.isEmpty()) {
@@ -94,5 +84,10 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
             return FileUtil.loadImage(book.getCoverUrl());
         }
         return FileUtil.loadImage(DEFAULT_COVER);
+    }
+
+    @Override
+    public List<Book> findReviewedBooks(User user) {
+        return repository.findReviewedBooks(user);
     }
 }

@@ -31,11 +31,18 @@
     </div>
 </nav>
 
+<c:if test="${not empty error}" >
+    <div class="alert alert-danger">
+        <strong>Warning!</strong> <c:out value="${error}" />
+    </div>
+</c:if>
+
 <c:url var="firstUrl" value="/admin/users?page=1" />
 <c:url var="lastUrl" value="/admin/users?page=${users.totalPages}" />
 <c:url var="prevUrl" value="/admin/users?page=${current - 1}" />
 <c:url var="nextUrl" value="/admin/users?page=${current + 1}" />
 
+<c:if test="${empty error}" >
 <div class="container">
     <table class="table table-hover table-responsive">
         <thead>
@@ -71,6 +78,7 @@
             </c:forEach>
         </tbody>
     </table>
+    </c:if>
 
     <div class="container">
         <div class="span12">
@@ -80,6 +88,7 @@
         </div>
     </div>
 
+    <c:if test="${empty error}" >
     <div class="inner">
         <ul class="pagination">
             <c:if test="${current != 1}">
@@ -105,6 +114,7 @@
             </c:if>
         </ul>
     </div>
+    </c:if>
 </div>
 
 <script src="${pageContext.request.contextPath}/webjars/jquery/3.1.1/jquery.min.js"></script>

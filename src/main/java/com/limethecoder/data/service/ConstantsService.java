@@ -7,7 +7,6 @@ import java.util.List;
 
 public interface ConstantsService {
     String GENRE_TYPES = "genres";
-    String REVIEW_TYPES = "reviewsType";
 
     Constants getInstance();
     Constants addConstant(String  element, String type);

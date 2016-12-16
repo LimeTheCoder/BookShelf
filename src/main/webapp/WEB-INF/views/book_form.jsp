@@ -16,8 +16,8 @@
 
 <ol class="breadcrumb">
     <li class="breadcrumb-item"> <a href="#">Home</a></li>
-    <li class="breadcrumb-item"> <a href="<c:url value="/admin/users" />">Users</a></li>
-    <li class="breadcrumb-item active">User</li>
+    <li class="breadcrumb-item"> <a href="<c:url value="/admin/books" />">Books</a></li>
+    <li class="breadcrumb-item active">Book</li>
 </ol>
 
 <div class="container">
@@ -32,7 +32,7 @@
                 <div class="form-group">
                     <c:set var="titleErrors"><form:errors path="title"/></c:set>
                     <label>Title:</label>
-                    <td><form:input path="title" class="form-control" value=""/></td>
+                    <form:input path="title" class="form-control" value=""/>
 
                     <c:if test="${not empty titleErrors}">
                         <div class="alert alert-danger">
@@ -45,7 +45,7 @@
                     <c:set var="descriptionErrors"><form:errors path="description"/></c:set>
                     <label>Description:</label>
 
-                    <td><form:input path="description" value="" class="form-control" /></td>
+                    <form:input path="description" value="" class="form-control" />
                     <c:if test="${not empty descriptionErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${descriptionErrors}
@@ -56,7 +56,7 @@
                     <c:set var="pagesCntErrors"><form:errors path="pagesCnt"/></c:set>
                     <label>Pages count: </label>
 
-                    <td><form:input path="pagesCnt" value="" class="form-control" /></td>
+                    <form:input path="pagesCnt" value="" class="form-control" />
                     <c:if test="${not empty pagesCntErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${pagesCntErrors}
@@ -65,14 +65,12 @@
                 </div>
 
                 <form:hidden path="coverUrl" />
-                <form:hidden path="rateCnt" />
-                <form:hidden path="rateValue" />
 
                 <div class="form-group">
                     <c:set var="publishYearErrors"><form:errors path="publishYear"/></c:set>
                     <label>Publish year:</label>
 
-                    <td><form:input path="publishYear" value="" class="form-control" /></td>
+                    <form:input path="publishYear" value="" class="form-control" />
                     <c:if test="${not empty publishYearErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${publishYearErrors}
@@ -83,12 +81,12 @@
                     <c:set var="coverErrors"><form:errors path="cover"/></c:set>
                     <form:label path="cover">Cover:</form:label>
 
-                    <td><label class="btn btn-default btn-file">
+                    <label class="btn btn-default btn-file">
                         Browse <form:input path="cover" style="display: none;"
                                            type="file" class="form-control"
                                            onchange="$('#upload-file-info').html($(this).val());"/>
                         <span class='label label-info' id="upload-file-info">${book.coverUrl}</span>
-                    </label></td>
+                    </label>
                     <c:if test="${not empty coverErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${coverErrors}
@@ -98,11 +96,9 @@
 
                 <div class="form-group">
                     <form:label path="genres">Genres:</form:label>
-                    <td>
-                        <form:select path="genres" multiple="true" class="form-control">
-                            <form:options items="${genres}" />
-                        </form:select>
-                    </td>
+                    <form:select path="genres" multiple="true" class="form-control">
+                        <form:options items="${genres}" />
+                    </form:select>
                 </div>
 
                 <c:forEach var="author" items="${book.authors}" varStatus="status">
@@ -112,11 +108,11 @@
                         <div class="panel-body">
                             <div class="form-group">
                                 <label>Name:</label>
-                                <td><form:input path="authors[${status.index}].name" class="form-control" value=""/></td>
+                                <form:input path="authors[${status.index}].name" class="form-control" value=""/>
                             </div>
                             <div class="form-group">
                                 <label>Surname:</label>
-                                <td><form:input path="authors[${status.index}].surname" class="form-control" value=""/></td>
+                                <form:input path="authors[${status.index}].surname" class="form-control" value=""/>
                             </div>
                             <div class="form-group">
                                 <label>BirthDate:</label>
@@ -135,7 +131,7 @@
                             <c:set var="publisherNameErrors"><form:errors path="publisher.name"/></c:set>
                             <label>Name:</label>
 
-                            <td><form:input path="publisher.name" value="" class="form-control" /></td>
+                            <form:input path="publisher.name" value="" class="form-control" />
                             <c:if test="${not empty publisherNameErrors}">
                                 <div class="alert alert-danger">
                                     <strong>Error!</strong> ${publisherNameErrors}
@@ -147,7 +143,7 @@
                             <c:set var="addressZipErrors"><form:errors path="publisher.address.zip"/></c:set>
                             <label>Zip:</label>
 
-                            <td><form:input path="publisher.address.zip" value="" class="form-control" /></td>
+                            <form:input path="publisher.address.zip" value="" class="form-control" />
                             <c:if test="${not empty addressZipErrors}">
                                 <div class="alert alert-danger">
                                     <strong>Error!</strong> ${addressZipErrors}
@@ -159,7 +155,7 @@
                             <c:set var="addressCountryErrors"><form:errors path="publisher.address.country"/></c:set>
                             <label>Country:</label>
 
-                            <td><form:input path="publisher.address.country" value="" class="form-control" /></td>
+                            <form:input path="publisher.address.country" value="" class="form-control" />
                             <c:if test="${not empty addressCountryErrors}">
                                 <div class="alert alert-danger">
                                     <strong>Error!</strong> ${addressCountryErrors}
@@ -171,7 +167,7 @@
                             <c:set var="addressCityErrors"><form:errors path="publisher.address.city"/></c:set>
                             <label>City:</label>
 
-                            <td><form:input path="publisher.address.city" value="" class="form-control" /></td>
+                            <form:input path="publisher.address.city" value="" class="form-control" />
                             <c:if test="${not empty addressCityErrors}">
                                 <div class="alert alert-danger">
                                     <strong>Error!</strong> ${addressCityErrors}
@@ -183,7 +179,7 @@
                             <c:set var="addressStreetErrors"><form:errors path="publisher.address.street"/></c:set>
                             <label>Street:</label>
 
-                            <td><form:input path="publisher.address.street" value="" class="form-control" /></td>
+                            <form:input path="publisher.address.street" value="" class="form-control" />
                             <c:if test="${not empty addressStreetErrors}">
                                 <div class="alert alert-danger">
                                     <strong>Error!</strong> ${addressStreetErrors}
@@ -195,7 +191,7 @@
                             <c:set var="addressBuildingErrors"><form:errors path="publisher.address.building"/></c:set>
                             <label>Building:</label>
 
-                            <td><form:input path="publisher.address.building" value="" class="form-control" /></td>
+                            <form:input path="publisher.address.building" value="" class="form-control" />
                             <c:if test="${not empty addressBuildingErrors}">
                                 <div class="alert alert-danger">
                                     <strong>Error!</strong> ${addressBuildingErrors}

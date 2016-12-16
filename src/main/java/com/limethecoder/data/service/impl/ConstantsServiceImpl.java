@@ -30,11 +30,6 @@ public class ConstantsServiceImpl implements ConstantsService {
                 constants.getGenres().add(element);
             }
 
-            if (collection.equals(ConstantsService.REVIEW_TYPES) &&
-                    constants.getReviewTypes() != null) {
-                constants.getReviewTypes().add(element);
-            }
-
             constantsRepository.save(constants);
         }
 
@@ -51,11 +46,6 @@ public class ConstantsServiceImpl implements ConstantsService {
                 constants.getGenres().remove(element);
             }
 
-            if (collection.equals(ConstantsService.REVIEW_TYPES) &&
-                    constants.getReviewTypes() != null) {
-                constants.getReviewTypes().remove(element);
-            }
-
             constantsRepository.save(constants);
         }
     }
@@ -68,11 +58,6 @@ public class ConstantsServiceImpl implements ConstantsService {
             if (collection.equals(ConstantsService.GENRE_TYPES) &&
                     constants.getGenres() != null) {
                 return constants.getGenres().contains(element);
-            }
-
-            if (collection.equals(ConstantsService.REVIEW_TYPES) &&
-                    constants.getReviewTypes() != null) {
-                return constants.getReviewTypes().contains(element);
             }
         }
 
@@ -88,11 +73,6 @@ public class ConstantsServiceImpl implements ConstantsService {
                     constants.getGenres() != null) {
                 return constants.getGenres().size();
             }
-
-            if (collection.equals(ConstantsService.REVIEW_TYPES) &&
-                    constants.getReviewTypes() != null) {
-                return constants.getReviewTypes().size();
-            }
         }
 
         return 0;
@@ -106,11 +86,6 @@ public class ConstantsServiceImpl implements ConstantsService {
             if (type.equals(ConstantsService.GENRE_TYPES) &&
                     constants.getGenres() != null) {
                 return constants.getGenres();
-            }
-
-            if (type.equals(ConstantsService.REVIEW_TYPES) &&
-                    constants.getReviewTypes() != null) {
-                return constants.getReviewTypes();
             }
         }
 

@@ -12,8 +12,6 @@ public class Constants {
 
     private List<String> genres;
 
-    private List<String> reviewTypes;
-
     public String getId() {
         return id;
     }
@@ -28,13 +26,5 @@ public class Constants {
 
     public void setGenres(List<String> genres) {
         this.genres = genres;
-    }
-
-    public List<String> getReviewTypes() {
-        return reviewTypes;
-    }
-
-    public void setReviewTypes(List<String> reviewTypes) {
-        this.reviewTypes = reviewTypes;
     }
 }

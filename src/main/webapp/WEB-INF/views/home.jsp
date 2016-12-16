@@ -81,7 +81,13 @@
     </div>
 </nav>
 
+<c:if test="${not empty error}" >
+    <div class="alert alert-danger">
+        <strong>Warning!</strong> <c:out value="${error}" />
+    </div>
+</c:if>
 
+<c:if test="${empty error}" >
 <div class="container">
     <div class="row">
         <c:forEach items="${books.content}" var="book" varStatus="i">
@@ -138,7 +144,7 @@
 <footer class="container-fluid text-center">
     <p>Online Library Copyright</p>
 </footer>
-
+</c:if>
 <script src="${pageContext.request.contextPath}/webjars/jquery/3.1.1/jquery.min.js"></script>
 <script src="${pageContext.request.contextPath}/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js"></script>
 

@@ -58,6 +58,11 @@ public class BookController {
             PageRequest pageRequest = new PageRequest(pageNumber - 1, PAGE_SIZE);
             Page<Book> page = bookService.findAll(pageRequest);
 
+            if(page.getTotalElements() == 0) {
+                model.addAttribute("error", "No books in database");
+                return "books";
+            }
+
             int begin = Math.max(1, pageNumber - PAGES_ON_VIEW / 2);
             int end = Math.min(begin + PAGES_ON_VIEW - 1, page.getTotalPages());
 

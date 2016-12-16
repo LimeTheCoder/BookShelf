@@ -165,7 +165,7 @@
         </div>
         <div class="btn-group" role="group">
             <button type="button" id="stars" class="btn btn-default" href="#tab2" data-toggle="tab"><span class="glyphicon glyphicon-star" aria-hidden="true"></span>
-                <div class="hidden-xs">Stars</div>
+                <div class="hidden-xs">Reviewed</div>
             </button>
         </div>
         <div class="btn-group" role="group">
@@ -203,12 +203,36 @@
                 </div>
             </div>
             <div class="tab-pane fade in" id="tab2">
-                <h3>This is tab 2</h3>
+                <c:if test="${not empty reviewed}">
+                    <div class="row">
+                        <c:forEach var="book" items="${reviewed}" >
+                            <div class="col-md-3 clickable"
+                                 data-href="<c:url value="/admin/books" />">
+                                <div class="offer offer-radius offer-warning">
+                                    <div class="shape">
+                                        <div class="shape-text">
+                                            rated
+                                        </div>
+                                    </div>
+                                    <div class="offer-content">
+                                        <h3 class="lead">
+                                            <c:out value="${book.title}" />
+                                        </h3>
+                                        <p>
+                                            <c:out value="${book.description}" />
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:if>
             </div>
             <div class="tab-pane fade in" id="tab3">
+                <c:if test="${not empty liked}">
                     <div class="row">
                         <c:forEach var="book" items="${liked}" >
-                            <div class="col-xs-12 col-sm-6 col-md-3 col-lg-2 clickable"
+                            <div class="col-md-3 clickable"
                                  data-href="<c:url value="/admin/books" />">
                                 <div class="offer offer-radius offer-danger">
                                     <div class="shape">
@@ -228,7 +252,7 @@
                             </div>
                         </c:forEach>
                     </div>
-
+                </c:if>
             </div>
         </div>
     </div>

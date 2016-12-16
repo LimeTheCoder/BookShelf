@@ -4,7 +4,6 @@ package com.limethecoder.controller;
 import com.limethecoder.data.domain.*;
 import com.limethecoder.data.service.BookService;
 import com.limethecoder.data.service.LikeService;
-import com.limethecoder.data.service.RateService;
 import com.limethecoder.data.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,12 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
 @RequestMapping("/")
@@ -35,8 +31,6 @@ public class HomeController {
     @Autowired
     private UserService userService;
     @Autowired
-    private RateService rateService;
-    @Autowired
     private LikeService likeService;
 
     @RequestMapping(method = GET)
@@ -45,6 +39,11 @@ public class HomeController {
             Page<Book> page = bookService.findAll(new PageRequest(
                     pageNumber - 1, PAGE_SIZE)
             );
+
+            if(page.getTotalElements() == 0) {
+                model.addAttribute("error", "No books in database");
+                return "home";
+            }
 
             int begin = Math.max(1, pageNumber - PAGES_ON_VIEW / 2);
             int end = Math.min(begin + PAGES_ON_VIEW - 1, page.getTotalPages());
@@ -82,6 +81,12 @@ public class HomeController {
         if(liked != null) {
             model.addAttribute("liked", liked);
         }
+
+        List<Book> reviewed = bookService.findReviewedBooks(user);
+        if(reviewed != null) {
+            model.addAttribute("reviewed", reviewed);
+        }
+
         model.addAttribute("user", user);
         return "user_page";
     }

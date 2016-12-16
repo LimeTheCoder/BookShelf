@@ -46,12 +46,6 @@ public class Book {
 
     private List<Review> reviews;
 
-    @Range
-    private long rateCnt;
-
-    @Range
-    private long rateValue;
-
     @NotNull
     @NotEmpty
     private List<String> genres;
@@ -68,20 +62,34 @@ public class Book {
         this.cover = cover;
     }
 
-    public long getRateCnt() {
-        return rateCnt;
+    public double getAverageRate(){
+        if(reviews == null) {
+            return 0;
+        }
+        return reviews.stream().mapToInt(Review::getRate)
+                .average().getAsDouble();
     }
 
-    public void setRateCnt(long rateCnt) {
-        this.rateCnt = rateCnt;
+    public int getReviewsCnt() {
+        if(reviews == null) {
+            return 0;
+        }
+
+        return reviews.size();
     }
 
-    public long getRateValue() {
-        return rateValue;
-    }
+    public boolean isReviewed(User user) {
+        if(reviews == null || reviews.isEmpty()) {
+            return false;
+        }
 
-    public void setRateValue(long rateValue) {
-        this.rateValue = rateValue;
+        for(Review review : reviews) {
+            if(review.getUser().equals(user)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public List<Review> getReviews() {

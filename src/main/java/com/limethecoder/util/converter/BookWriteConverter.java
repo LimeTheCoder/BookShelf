@@ -27,8 +27,7 @@ public class BookWriteConverter implements Converter<Book, DBObject> {
         dbo.put("genres", book.getGenres());
         dbo.put("publishYear", book.getPublishYear());
         dbo.put("pagesCnt", book.getPagesCnt());
-        dbo.put("rateCnt", book.getRateCnt());
-        dbo.put("rateValue", book.getRateValue());
+        dbo.put("_class", "com.limethecoder.data.domain.Book");
         dbo.put("description", book.getDescription());
         dbo.put("publisher", convertPublisher(book.getPublisher()));
 
@@ -77,7 +76,6 @@ public class BookWriteConverter implements Converter<Book, DBObject> {
 
     private DBObject convertReview(Review review) {
         DBObject dbo = new BasicDBObject();
-        dbo.put("type", review.getType());
         dbo.put("text", review.getText());
         dbo.put("date", review.getDate());
         dbo.put("user", review.getUser().getLogin());

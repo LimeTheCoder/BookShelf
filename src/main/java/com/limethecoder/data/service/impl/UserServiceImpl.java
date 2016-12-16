@@ -26,7 +26,6 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
 
     private UserRepository userRepository;
     private RoleRepository roleRepository;
-    private RateRepository rateRepository;
     private BookRepository bookRepository;
     private LikeRepository likeRepository;
 
@@ -36,12 +35,10 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository,
-                           RateRepository rateRepository,
                            BookRepository bookRepository,
                            LikeRepository likeRepository) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.rateRepository = rateRepository;
         this.bookRepository = bookRepository;
         this.likeRepository = likeRepository;
     }
@@ -73,16 +70,8 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
     public void delete(String login) {
         User user = userRepository.findOne(login);
         FileUtil.removeFileIfExists(user.getPhotoUrl());
-        List<Rate> toDelete = rateRepository.findByUserId(login);
 
-        if(toDelete != null && !toDelete.isEmpty()) {
-            toDelete.forEach((x) ->
-                    bookRepository.updateBookRate(x.getBookId(),
-                            -x.getValue(), -1)
-            );
-
-            rateRepository.delete(toDelete);
-        }
+        bookRepository.deleteReviewsByUser(user);
 
         List<Like> likes = likeRepository.findByUserId(login);
 

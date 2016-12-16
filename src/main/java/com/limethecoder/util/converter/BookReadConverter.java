@@ -29,8 +29,6 @@ public class BookReadConverter implements Converter<DBObject, Book> {
         book.setTitle((String) source.get("title"));
         book.setPublishYear((Integer)source.get("publishYear"));
         book.setPagesCnt((Integer)source.get("pagesCnt"));
-        book.setRateCnt((Long)source.get("rateCnt"));
-        book.setRateValue((Long)source.get("rateValue"));
         book.setDescription((String)source.get("description"));
 
         Object obj = source.get("coverUrl");
@@ -128,7 +126,6 @@ public class BookReadConverter implements Converter<DBObject, Book> {
         DBObject source = (DBObject) object;
 
         Review review = new Review();
-        review.setType((String)source.get("type"));
         review.setText((String)source.get("text"));
 
         if(source.get("date") != null) {

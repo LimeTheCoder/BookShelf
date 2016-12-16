@@ -54,6 +54,11 @@ public class UserController {
             PageRequest pageRequest = new PageRequest(pageNumber - 1, PAGE_SIZE);
             Page<User> page = userService.findAll(pageRequest);
 
+            if(page.getTotalElements() == 0) {
+                model.addAttribute("error", "No users in database");
+                return "users";
+            }
+
             int begin = Math.max(1, pageNumber - PAGES_ON_VIEW / 2);
             int end = Math.min(begin + PAGES_ON_VIEW - 1, page.getTotalPages());
 
