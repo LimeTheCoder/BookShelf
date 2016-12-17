@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <html>
 <head>
     <link rel='stylesheet'
@@ -141,7 +142,39 @@
     </style>
 </head>
 <body>
-
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="<c:url value="/" />">BookShelf</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="<c:url value="#" />">${user.login}</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <sec:authorize access="isAnonymous()">
+                    <li><a href="<c:url value="/login" />"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                    <li><a href="<c:url value="/registration" />"><span class="glyphicon glyphicon-share"></span> Sign Up</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated()">
+                    <c:set var="login">
+                        <sec:authentication property="principal.username" />
+                    </c:set>
+                    <li><a href="/user/${login}"><span class="glyphicon glyphicon-user"></span> Your profile</a></li>
+                    <li><a href="#" onclick="document.getElementById('logout').submit();"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                    <form action="<c:url value="/logout" />" id="logout" method="post">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    </form>
+                </sec:authorize>
+            </ul>
+        </div>
+    </div>
+</nav>
 <div class="row">
 <div class="col-md-2"></div>
 <div class="col-md-8">
@@ -206,7 +239,7 @@
                     <div class="row">
                         <c:forEach var="book" items="${reviewed}" >
                             <div class="col-md-3 clickable"
-                                 data-href="<c:url value="/admin/books" />">
+                                 data-href="<c:url value="/book/${book.id}" />">
                                 <div class="offer offer-radius offer-warning">
                                     <div class="shape">
                                         <div class="shape-text">
@@ -232,7 +265,7 @@
                     <div class="row">
                         <c:forEach var="book" items="${liked}" >
                             <div class="col-md-3 clickable"
-                                 data-href="<c:url value="/admin/books" />">
+                                 data-href="<c:url value="/book/${book.id}" />">
                                 <div class="offer offer-radius offer-danger">
                                     <div class="shape">
                                         <div class="shape-text">

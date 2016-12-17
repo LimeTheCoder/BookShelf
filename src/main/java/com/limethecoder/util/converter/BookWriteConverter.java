@@ -79,6 +79,7 @@ public class BookWriteConverter implements Converter<Book, DBObject> {
         dbo.put("text", review.getText());
         dbo.put("date", review.getDate());
         dbo.put("user", review.getUser().getLogin());
+        dbo.put("rate", review.getRate());
         return dbo;
     }
 }

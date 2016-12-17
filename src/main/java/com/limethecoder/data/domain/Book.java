@@ -88,12 +88,16 @@ public class Book {
     }
 
     public boolean isReviewed(User user) {
+        return isReviewed(user.getLogin());
+    }
+
+    public boolean isReviewed(String login) {
         if(reviews == null || reviews.isEmpty()) {
             return false;
         }
 
         for(Review review : reviews) {
-            if(review.getUser().equals(user)) {
+            if(review.getUser().getLogin().equals(login)) {
                 return true;
             }
         }

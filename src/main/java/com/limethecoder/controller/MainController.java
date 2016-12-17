@@ -10,8 +10,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -99,8 +104,20 @@ public class MainController {
     @RequestMapping(value = "/book/{id}", method = POST)
     public String addReview(@PathVariable String id,
                             @ModelAttribute("newReview") Review review,
-                            Model model) {
+                            Model model, Principal principal) {
         Book book = bookService.findOne(id);
+        User user = userService.findOne(principal.getName());
+        review.setUser(user);
+        review.setDate(new Date());
+
+        if(book.getReviews() == null) {
+            book.setReviews(new ArrayList<>());
+        }
+
+        book.getReviews().add(review);
+        bookService.update(book);
+        model.addAttribute(book);
+
         return "book_page";
     }
 

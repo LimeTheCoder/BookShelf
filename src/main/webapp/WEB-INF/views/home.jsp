@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,13 +12,11 @@
     <link rel='stylesheet'
           href='${pageContext.request.contextPath}/webjars/bootstrap/3.3.7-1/css/bootstrap-theme.min.css'>
     <style>
-        /* Remove the navbar's default rounded borders and increase the bottom margin */
         .navbar {
             margin-bottom: 50px;
             border-radius: 0;
         }
 
-        /* Remove the jumbotron's default bottom margin */
         .jumbotron {
             margin-bottom: 0;
         }
@@ -38,7 +37,6 @@
             color: #d17581;
         }
 
-        /* Add a gray background color and some padding to the footer */
         footer {
             background-color: #f2f2f2;
             padding: 25px;
@@ -51,6 +49,7 @@
 <c:url var="lastUrl" value="/?page=${books.totalPages}" />
 <c:url var="prevUrl" value="/?page=${current - 1}" />
 <c:url var="nextUrl" value="/?page=${current + 1}" />
+
 
 <div class="jumbotron">
     <div class="container text-center">
@@ -67,19 +66,27 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">Logo</a>
+            <a class="navbar-brand" href="<c:url value="/" />">BookShelf</a>
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
-                <li class="active"><a href="#">Home</a></li>
-                <li><a href="#">Products</a></li>
-                <li><a href="#">Deals</a></li>
-                <li><a href="#">Stores</a></li>
-                <li><a href="#">Contact</a></li>
+                <li class="active"><a href="<c:url value="/" />">Home</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Your Account</a></li>
-                <li><a href="#"><span class="glyphicon glyphicon-shopping-cart"></span> Cart</a></li>
+                <sec:authorize access="isAnonymous()">
+                    <li><a href="<c:url value="/login" />"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                    <li><a href="<c:url value="/registration" />"><span class="glyphicon glyphicon-share"></span> Sign Up</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated()">
+                    <c:set var="login">
+                        <sec:authentication property="principal.username" />
+                    </c:set>
+                    <li><a href="/user/${login}"><span class="glyphicon glyphicon-user"></span> Your profile</a></li>
+                    <li><a href="#" onclick="document.getElementById('logout').submit();"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                    <form action="<c:url value="/logout" />" id="logout" method="post">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    </form>
+                </sec:authorize>
             </ul>
         </div>
     </div>
@@ -99,7 +106,7 @@
                 <div class="thumbnail">
                     <img src="/getCover/${book.id}" height="222" width="350"  alt="">
                     <div class="caption">
-                        <h4><a href="<c:url value="/admin/books" />"><c:out value="${book.title}" /></a></h4>
+                        <h4><a href="<c:url value="/book/${book.id}" />"><c:out value="${book.title}" /></a></h4>
                         <p><c:out value="${book.description}" /></p>
                     </div>
                     <div class="ratings">

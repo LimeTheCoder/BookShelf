@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
     <link rel='stylesheet'
@@ -27,6 +28,12 @@
         <ul class="nav navbar-nav">
             <li><a href="<c:url value="/admin/users" />">Users</a></li>
             <li class="active"><a href="<c:url value="/admin/books" />">Books</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="#" onclick="document.getElementById('logout').submit();"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+            <form action="<c:url value="/logout" />" id="logout" method="post">
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            </form>
         </ul>
     </div>
 </nav>
@@ -70,7 +77,7 @@
                 <td><c:out value="${book.getReviewsCnt()}" /></td>
                 <td><c:out value="${book.coverUrl}" /></td>
                 <td><c:out value="${book.printGenres()}" /></td>
-                <td><c:out value="${book.getAverageRate()}" /></td>
+                <td><fmt:formatNumber value="${book.averageRate}" maxFractionDigits="1"/></td>
             </tr>
         </c:forEach>
         </tbody>

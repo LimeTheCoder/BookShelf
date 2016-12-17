@@ -35,7 +35,7 @@
                     <c:set var="nameErrors"><form:errors path="name"/></c:set>
                     <label>Name:</label>
 
-                    <form:input path="name" value="" class="form-control" />
+                    <form:input path="name" value="" class="form-control" required="required" />
                     <c:if test="${not empty nameErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${nameErrors}
@@ -46,7 +46,7 @@
                     <c:set var="surnameErrors"><form:errors path="surname"/></c:set>
                     <label>Surname: </label>
 
-                    <form:input path="surname" value="" class="form-control" />
+                    <form:input path="surname" value="" class="form-control" required="required" />
                     <c:if test="${not empty surnameErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${surnameErrors}

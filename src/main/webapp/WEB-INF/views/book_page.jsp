@@ -2,6 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
     <title>Book</title>
@@ -53,6 +55,41 @@
     </style>
 </head>
 <body>
+
+<nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="<c:url value="/" />">BookShelf</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+                <li class="active"><a href="<c:url value="#" />">${book.title}</a></li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <sec:authorize access="isAnonymous()">
+                    <li><a href="<c:url value="/login" />"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                    <li><a href="<c:url value="/registration" />"><span class="glyphicon glyphicon-share"></span> Sign Up</a></li>
+                </sec:authorize>
+                <sec:authorize access="isAuthenticated()">
+                    <c:set var="login">
+                        <sec:authentication property="principal.username" />
+                    </c:set>
+                    <li><a href="/user/${login}"><span class="glyphicon glyphicon-user"></span> Your profile</a></li>
+                    <li><a href="#" onclick="document.getElementById('logout').submit();"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                    <form action="<c:url value="/logout" />" id="logout" method="post">
+                        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    </form>
+                </sec:authorize>
+            </ul>
+        </div>
+    </div>
+</nav>
+
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-10">
@@ -94,35 +131,43 @@
         <hr/>
         <div class="container">
             <div class="row">
-                <div class="col-md-6">
-                    <div class="well well-sm">
-                        <div class="text-right">
-                            <a class="btn btn-success btn-green" href="#reviews-anchor" id="open-review-box">Leave a Review</a>
-                        </div>
+                <sec:authorize access="isAuthenticated()">
+                    <c:set var="login">
+                        <sec:authentication property="principal.username" />
+                    </c:set>
+                    <c:if test="${not book.isReviewed(login)}">
+                        <div class="col-md-6">
+                            <div class="well well-sm">
+                                <div class="text-right">
+                                    <a class="btn btn-success btn-green" href="#reviews-anchor" id="open-review-box">Leave a Review</a>
+                                </div>
 
-                        <div class="row" id="post-review-box" style="display:none;">
-                            <div class="col-md-12">
-                                <form:form modelAttribute="newReview" accept-charset="UTF-8" method="POST">
-                                    <form:input path="rate" id="ratings-hidden" name="rating" type="hidden" />
-                                    <form:textarea path="text" class="form-control animated" cols="50" id="new-review" name="comment" placeholder="Enter your review here..." rows="5" />
+                                <div class="row" id="post-review-box" style="display:none;">
+                                    <div class="col-md-12">
+                                        <form:form modelAttribute="newReview" accept-charset="UTF-8" method="POST" id="reviewForm">
+                                            <form:input path="rate" id="ratings-hidden" name="rating" type="hidden" required="required" />
+                                            <form:textarea path="text" class="form-control animated" cols="50" id="new-review" name="comment"
+                                                           placeholder="Enter your review here..." rows="5" required="required" />
 
-                                    <div class="text-right">
-                                        <div class="stars starrr" data-rating="0"></div>
-                                        <a class="btn btn-danger btn-sm" href="#" id="close-review-box" style="display:none; margin-right: 10px;">
-                                            <span class="glyphicon glyphicon-remove"></span>Cancel</a>
-                                        <button class="btn btn-success btn-lg" type="submit">Submit</button>
+                                            <div class="text-right">
+                                                <div class="stars starrr" data-rating="0"></div>
+                                                <a class="btn btn-danger btn-sm" href="#" id="close-review-box" style="display:none; margin-right: 10px;">
+                                                    <span class="glyphicon glyphicon-remove"></span>Cancel</a>
+                                                <button class="btn btn-success btn-lg" type="submit">Submit</button>
+                                            </div>
+                                        </form:form>
                                     </div>
-                                </form:form>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </c:if>
+                </sec:authorize>
                 <div class="col-md-6">
                     <div class="well well-sm">
                         <div class="row">
                             <div class="col-xs-6 col-md-6 text-center">
                                 <h1 class="rating-num">
-                                    ${book.averageRate}</h1>
+                                    <fmt:formatNumber value="${book.averageRate}" maxFractionDigits="1"/></h1>
                                 <div class="rating">
                                     <c:choose>
                                         <c:when test="${book.averageRate >= 0.5}">
@@ -178,7 +223,7 @@
                                         <div class="progress progress-striped">
                                             <div class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="20"
                                                  aria-valuemin="0" aria-valuemax="100" style="width: ${book.findRatePercent(5)}%">
-                                                <span class="sr-only">${book.findRatePercent(5)}%</span>
+                                                <span class="sr-only"><c:out value="${book.findRatePercent(5)}" />%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -189,7 +234,7 @@
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="20"
                                                  aria-valuemin="0" aria-valuemax="100" style="width: ${book.findRatePercent(4)}%">
-                                                <span class="sr-only">${book.findRatePercent(4)}%</span>
+                                                <span class="sr-only"><c:out value="${book.findRatePercent(4)}" />%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -200,7 +245,7 @@
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20"
                                                  aria-valuemin="0" aria-valuemax="100" style="width: ${book.findRatePercent(3)}%">
-                                                <span class="sr-only">${book.findRatePercent(3)}%</span>
+                                                <span class="sr-only"><c:out value="${book.findRatePercent(3)}" />%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -211,7 +256,7 @@
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="20"
                                                  aria-valuemin="0" aria-valuemax="100" style="width: ${book.findRatePercent(2)}%">
-                                                <span class="sr-only">${book.findRatePercent(2)}%</span>
+                                                <span class="sr-only"><c:out value="${book.findRatePercent(2)}" />%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -222,7 +267,7 @@
                                         <div class="progress">
                                             <div class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="80"
                                                  aria-valuemin="0" aria-valuemax="100" style="width: ${book.findRatePercent(1)}%">
-                                                <span class="sr-only">${book.findRatePercent(1)}%</span>
+                                                <span class="sr-only"><c:out value="${book.findRatePercent(1)}" />%</span>
                                             </div>
                                         </div>
                                     </div>
@@ -241,8 +286,8 @@
                         <div class="row">
                             <div class="col-sm-3">
                                 <img src="/getIcon/${review.user.login}" class="img-rounded" width="100" height="100">
-                                <div class="review-block-name"><a href="#">${review.user.login}</a></div>
-                                <div class="review-block-date">${review.date}</div>
+                                <div class="review-block-name"><a href="<c:url value="/user/${review.user.login}" />">${review.user.login}</a></div>
+                                <div class="review-block-date"><c:out value="${review.date}" /></div>
                             </div>
                             <div class="col-sm-9">
                                 <div class="review-block-rate">
@@ -287,7 +332,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </div>
-                                <div class="review-block-description">${review.text}</div>
+                                <div class="review-block-description"><c:out value="${review.text}" /></div>
                             </div>
                         </div>
                     </div>

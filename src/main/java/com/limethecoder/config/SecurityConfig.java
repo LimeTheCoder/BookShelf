@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().
                 logout().logoutSuccessUrl("/").
                 and()
-                .authorizeRequests().antMatchers("/authors/add", "/books/add").hasRole("ADMIN")
+                .authorizeRequests().antMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().permitAll();
     }
 

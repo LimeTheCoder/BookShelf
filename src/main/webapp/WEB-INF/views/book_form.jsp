@@ -94,7 +94,7 @@
 
                 <div class="form-group">
                     <form:label path="genres">Genres:</form:label>
-                    <form:select path="genres" multiple="true" class="form-control">
+                    <form:select path="genres" multiple="true" class="form-control" >
                         <form:options items="${genres}" />
                     </form:select>
                 </div>
@@ -106,16 +106,16 @@
                         <div class="panel-body">
                             <div class="form-group">
                                 <label>Name:</label>
-                                <form:input path="authors[${status.index}].name" class="form-control" value=""/>
+                                <form:input path="authors[${status.index}].name" class="form-control" value="" required="required"/>
                             </div>
                             <div class="form-group">
                                 <label>Surname:</label>
-                                <form:input path="authors[${status.index}].surname" class="form-control" value=""/>
+                                <form:input path="authors[${status.index}].surname" class="form-control" value="" required="required"/>
                             </div>
                             <div class="form-group">
                                 <label>BirthDate:</label>
                                 <div class="controls">
-                                    <form:input path="authors[${status.index}].birthDate" class="date form-control" />
+                                    <form:input path="authors[${status.index}].birthDate" class="date form-control" required="required"/>
                                 </div>
                             </div>
                         </div>
@@ -153,7 +153,7 @@
                             <c:set var="addressCountryErrors"><form:errors path="publisher.address.country"/></c:set>
                             <label>Country:</label>
 
-                            <form:input path="publisher.address.country" value="" class="form-control" />
+                            <form:input path="publisher.address.country" value="" class="form-control" required="required" />
                             <c:if test="${not empty addressCountryErrors}">
                                 <div class="alert alert-danger">
                                     <strong>Error!</strong> ${addressCountryErrors}
@@ -165,7 +165,7 @@
                             <c:set var="addressCityErrors"><form:errors path="publisher.address.city"/></c:set>
                             <label>City:</label>
 
-                            <form:input path="publisher.address.city" value="" class="form-control" />
+                            <form:input path="publisher.address.city" value="" class="form-control" required="required" />
                             <c:if test="${not empty addressCityErrors}">
                                 <div class="alert alert-danger">
                                     <strong>Error!</strong> ${addressCityErrors}

@@ -24,7 +24,7 @@
                 <c:set var="loginErrors"><form:errors path="login"/></c:set>
                 <div class="form-group">
                     <label>Login:</label>
-                    <td><form:input path="login" class="form-control" value="" /></td>
+                    <form:input path="login" class="form-control" value="" required="required"/>
 
                     <c:if test="${not empty loginErrors}">
                         <div class="alert alert-danger">
@@ -36,7 +36,7 @@
                     <c:set var="nameErrors"><form:errors path="name"/></c:set>
                     <label>Name:</label>
 
-                    <td><form:input path="name" value="" class="form-control" /></td>
+                    <form:input path="name" value="" class="form-control" required="required"/>
                     <c:if test="${not empty nameErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${nameErrors}
@@ -47,7 +47,7 @@
                     <c:set var="surnameErrors"><form:errors path="surname"/></c:set>
                     <label>Surname: </label>
 
-                    <td><form:input path="surname" value="" class="form-control" /></td>
+                    <form:input path="surname" value="" class="form-control" required="required" />
                     <c:if test="${not empty surnameErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${surnameErrors}
@@ -58,7 +58,7 @@
                     <c:set var="cityErrors"><form:errors path="city"/></c:set>
                     <label>City:</label>
 
-                    <td><form:input path="city" value="" class="form-control" /></td>
+                    <form:input path="city" value="" class="form-control" />
                     <c:if test="${not empty cityErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${cityErrors}
@@ -69,7 +69,7 @@
                     <c:set var="photoErrors"><form:errors path="photo"/></c:set>
                     <label>Photo: </label>
 
-                    <td><form:input path="photo" value="" type="file" class="form-control" /></td>
+                    <form:input path="photo" value="" type="file" class="form-control" />
                     <c:if test="${not empty photoErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${photoErrors}
@@ -80,8 +80,7 @@
                     <c:set var="passwordErrors"><form:errors path="password"/></c:set>
                     <label>Password:</label>
 
-                    <td>
-                        <form:input path="password" value="" type="password" class="form-control" /></td>
+                        <form:input path="password" value="" type="password" class="form-control" required="required"/>
                     <c:if test="${not empty passwordErrors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${passwordErrors}
@@ -92,7 +91,7 @@
                     <c:set var="Errors"><form:errors/></c:set>
                     <label>Confirm password:</label>
 
-                    <td><form:input path="matchingPassword" value="" type="password" class="form-control" /></td>
+                    <form:input path="matchingPassword" value="" type="password" class="form-control" required="required"/>
                     <c:if test="${not empty Errors}">
                         <div class="alert alert-danger">
                             <strong>Error!</strong> ${Errors}
@@ -102,11 +101,9 @@
                 <sec:authorize access="hasRole('ADMIN')">
                     <div class="form-group">
                         <form:label path="roles">Roles:</form:label>
-                        <td>
-                            <form:select path="roles" multiple="true" class="form-control">
-                                <form:options items="${roles}" itemValue="name" itemLabel="name" />
-                            </form:select>
-                        </td>
+                        <form:select path="roles" multiple="true" class="form-control">
+                            <form:options items="${roles}" itemValue="name" itemLabel="name" />
+                        </form:select>
                     </div>
                 </sec:authorize>
                 <button type="submit" class="btn btn-default">Submit</button>
