@@ -5,7 +5,6 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
 
-<%@ page session="false"%>
 <html>
 <head>
     <title>Welcome</title>

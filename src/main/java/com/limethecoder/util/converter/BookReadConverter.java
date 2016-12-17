@@ -127,6 +127,7 @@ public class BookReadConverter implements Converter<DBObject, Book> {
 
         Review review = new Review();
         review.setText((String)source.get("text"));
+        review.setRate((int)source.get("rate"));
 
         if(source.get("date") != null) {
             review.setDate((Date) source.get("date"));

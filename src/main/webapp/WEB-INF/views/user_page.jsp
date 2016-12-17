@@ -148,7 +148,6 @@
     <div class="card hovercard">
         <div class="card-background">
             <img class="card-bkimg" alt="" src="/getIcon/${user.login}">
-            <!-- http://lorempixel.com/850/280/people/9/ -->
         </div>
         <div class="useravatar">
             <img alt="" src="/getIcon/${user.login}">

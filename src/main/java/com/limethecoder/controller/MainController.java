@@ -10,18 +10,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
 @RequestMapping("/")
-public class HomeController {
+public class MainController {
 
     private final static int PAGE_SIZE = 20;
     private final static int PAGES_ON_VIEW = 5;
@@ -89,6 +87,21 @@ public class HomeController {
 
         model.addAttribute("user", user);
         return "user_page";
+    }
+    @RequestMapping(value = "/book/{id}", method = GET)
+    public String bookPage(@PathVariable String id, Model model) {
+        Book book = bookService.findOne(id);
+        model.addAttribute(book);
+        model.addAttribute("newReview", new Review());
+        return "book_page";
+    }
+
+    @RequestMapping(value = "/book/{id}", method = POST)
+    public String addReview(@PathVariable String id,
+                            @ModelAttribute("newReview") Review review,
+                            Model model) {
+        Book book = bookService.findOne(id);
+        return "book_page";
     }
 
     @RequestMapping(value = "/getCover/{id}")

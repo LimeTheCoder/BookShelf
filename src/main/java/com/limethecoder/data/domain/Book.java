@@ -66,8 +66,17 @@ public class Book {
         if(reviews == null) {
             return 0;
         }
+
         return reviews.stream().mapToInt(Review::getRate)
                 .average().getAsDouble();
+    }
+
+    public int findRatePercent(int rate) {
+        if(reviews == null) {
+            return 0;
+        }
+        long cnt = reviews.stream().filter((x) -> x.getRate() == rate).count();
+        return (int)((double)cnt / reviews.size() * 100);
     }
 
     public int getReviewsCnt() {

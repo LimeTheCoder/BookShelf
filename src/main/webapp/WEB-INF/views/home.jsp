@@ -1,6 +1,4 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ page session="false" %>
-
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,6 +31,12 @@
             display: block;
             margin-left: auto;
             margin-right: auto }
+
+        .stars
+        {
+            font-size: 24px;
+            color: #d17581;
+        }
 
         /* Add a gray background color and some padding to the footer */
         footer {
@@ -93,19 +97,54 @@
         <c:forEach items="${books.content}" var="book" varStatus="i">
             <div class="col-md-4">
                 <div class="thumbnail">
-                    <img src="/getCover/${book.id}" height="350" width="222"  alt="">
+                    <img src="/getCover/${book.id}" height="222" width="350"  alt="">
                     <div class="caption">
                         <h4><a href="<c:url value="/admin/books" />"><c:out value="${book.title}" /></a></h4>
                         <p><c:out value="${book.description}" /></p>
                     </div>
                     <div class="ratings">
-                        <p class="pull-right">15 reviews</p>
+                        <p class="pull-right">${book.getReviewsCnt()} reviews</p>
                         <p>
-                            <span class="glyphicon glyphicon-star"></span>
-                            <span class="glyphicon glyphicon-star"></span>
-                            <span class="glyphicon glyphicon-star"></span>
-                            <span class="glyphicon glyphicon-star"></span>
-                            <span class="glyphicon glyphicon-star"></span>
+                            <c:choose>
+                            <c:when test="${book.getAverageRate() >= 0.5}">
+                                <span class="glyphicon glyphicon-star stars"></span>
+                            </c:when>
+                            <c:otherwise>
+                                <span class="glyphicon glyphicon-star-empty stars"></span>
+                            </c:otherwise>
+                            </c:choose>
+                            <c:choose>
+                                <c:when test="${book.getAverageRate() >= 1.5}">
+                                    <span class="glyphicon glyphicon-star stars"></span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="glyphicon glyphicon-star-empty stars"></span>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:choose>
+                                <c:when test="${book.getAverageRate() >= 2.5}">
+                                    <span class="glyphicon glyphicon-star stars"></span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="glyphicon glyphicon-star-empty stars"></span>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:choose>
+                                <c:when test="${book.getAverageRate() >= 3.5}">
+                                    <span class="glyphicon glyphicon-star stars"></span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="glyphicon glyphicon-star-empty stars"></span>
+                                </c:otherwise>
+                            </c:choose>
+                            <c:choose>
+                                <c:when test="${book.getAverageRate() >= 4.5}">
+                                    <span class="glyphicon glyphicon-star stars"></span>
+                                </c:when>
+                                <c:otherwise>
+                                    <span class="glyphicon glyphicon-star-empty stars"></span>
+                                </c:otherwise>
+                            </c:choose>
                         </p>
                     </div>
                 </div>
