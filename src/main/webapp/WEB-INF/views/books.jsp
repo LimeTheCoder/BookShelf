@@ -29,6 +29,16 @@
             <li><a href="<c:url value="/admin/users" />">Users</a></li>
             <li class="active"><a href="<c:url value="/admin/books" />">Books</a></li>
         </ul>
+        <form class="navbar-form navbar-left">
+            <div class="input-group">
+                <input id="q" name="q" type="text" class="form-control" placeholder="Search">
+                <div class="input-group-btn">
+                    <button class="btn btn-default" type="submit">
+                        <i class="glyphicon glyphicon-search"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
         <ul class="nav navbar-nav navbar-right">
             <li><a href="#" onclick="document.getElementById('logout').submit();"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
             <form action="<c:url value="/logout" />" id="logout" method="post">
@@ -40,14 +50,22 @@
 
 <c:if test="${not empty error}" >
     <div class="alert alert-danger">
-        <strong>Warning!</strong> <c:out value="${error}" />
+        <strong>Notification!</strong> <c:out value="${error}" />
     </div>
 </c:if>
 
-<c:url var="firstUrl" value="/admin/books?page=1" />
-<c:url var="lastUrl" value="/admin/books?page=${books.totalPages}" />
-<c:url var="prevUrl" value="/admin/books?page=${current - 1}" />
-<c:url var="nextUrl" value="/admin/books?page=${current + 1}" />
+<c:if test="${empty query}">
+    <c:url var="firstUrl" value="/admin/books?page=1" />
+    <c:url var="lastUrl" value="/admin/books?page=${books.totalPages}" />
+    <c:url var="prevUrl" value="/admin/books?page=${current - 1}" />
+    <c:url var="nextUrl" value="/admin/books?page=${current + 1}" />
+</c:if>
+<c:if test="${not empty query}">
+    <c:url var="firstUrl" value="/admin/books?page=1&q=${query}" />
+    <c:url var="lastUrl" value="/admin/books?page=${books.totalPages}&q=${query}" />
+    <c:url var="prevUrl" value="/admin/books?page=${current - 1}&q=${query}" />
+    <c:url var="nextUrl" value="/admin/books?page=${current + 1}&q=${query}" />
+</c:if>
 
 <c:if test="${empty error}" >
 <div class="container">
@@ -92,7 +110,7 @@
         </div>
     </div>
 
-    <c:if test="${empty error}" >
+    <c:if test="${empty error and books.totalPages != 1}" >
     <div class="inner">
         <ul class="pagination">
             <c:if test="${current != 1}">
@@ -101,7 +119,12 @@
             </c:if>
 
             <c:forEach var="i" begin="${begin}" end="${end}">
-                <c:url var="pageUrl" value="/admin/books?page=${i}" />
+                <c:if test="${empty query}">
+                    <c:url var="pageUrl" value="/admin/books?page=${i}" />
+                </c:if>
+                <c:if test="${not empty query}">
+                    <c:url var="pageUrl" value="/admin/books?page=${i}&q=${query}" />
+                </c:if>
                 <c:choose>
                     <c:when test="${i == current}">
                         <li class="active"><a href="${pageUrl}"><c:out value="${i}" /></a></li>

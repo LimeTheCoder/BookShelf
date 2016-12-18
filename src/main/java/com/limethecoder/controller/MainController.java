@@ -8,6 +8,7 @@ import com.limethecoder.data.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -37,14 +38,21 @@ public class MainController {
     private LikeService likeService;
 
     @RequestMapping(method = GET)
-    public String home(@RequestParam(name = "page", defaultValue = "1") int pageNumber, Model model) {
+    public String home(@RequestParam(name = "page", defaultValue = "1") int pageNumber,
+                       @RequestParam(name = "q", defaultValue = "") String query,
+                       Model model) {
         if(pageNumber > 0) {
-            Page<Book> page = bookService.findAll(new PageRequest(
-                    pageNumber - 1, PAGE_SIZE)
-            );
+            Pageable pageable = new PageRequest(pageNumber - 1, PAGE_SIZE);
+
+            Page<Book> page = query.isEmpty() ? bookService.findAll(pageable) :
+                    bookService.fullTextSearch(query, pageable);
+
+            if(!query.isEmpty()) {
+                model.addAttribute("query", query);
+            }
 
             if(page.getTotalElements() == 0) {
-                model.addAttribute("error", "No books in database");
+                model.addAttribute("error", "No books for your request in database");
                 return "home";
             }
 

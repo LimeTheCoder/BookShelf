@@ -26,6 +26,10 @@
         {
             color: #d17581;
         }
+        .red-heart {
+            color : #DC143C;
+            font-size: 56px;
+        }
         .review-block{
             background-color:#FAFAFA;
             border:1px solid #EFEFEF;
@@ -126,6 +130,7 @@
                 </tbody>
             </table>
         </div>
+        <span class="glyphicon glyphicon-heart red-heart"></span>
     </div>
 </div>
         <hr/>

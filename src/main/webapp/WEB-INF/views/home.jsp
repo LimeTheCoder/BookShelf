@@ -44,12 +44,18 @@
     </style>
 </head>
 <body>
-
-<c:url var="firstUrl" value="/?page=1" />
-<c:url var="lastUrl" value="/?page=${books.totalPages}" />
-<c:url var="prevUrl" value="/?page=${current - 1}" />
-<c:url var="nextUrl" value="/?page=${current + 1}" />
-
+<c:if test="${not empty query}">
+    <c:url var="firstUrl" value="/?page=1&q=${query}" />
+    <c:url var="lastUrl" value="/?page=${books.totalPages}&q=${query}" />
+    <c:url var="prevUrl" value="/?page=${current - 1}&q=${query}" />
+    <c:url var="nextUrl" value="/?page=${current + 1}&q=${query}" />
+</c:if>
+<c:if test="${empty query}">
+    <c:url var="firstUrl" value="/?page=1" />
+    <c:url var="lastUrl" value="/?page=${books.totalPages}" />
+    <c:url var="prevUrl" value="/?page=${current - 1}" />
+    <c:url var="nextUrl" value="/?page=${current + 1}" />
+</c:if>
 
 <div class="jumbotron">
     <div class="container text-center">
@@ -72,6 +78,16 @@
             <ul class="nav navbar-nav">
                 <li class="active"><a href="<c:url value="/" />">Home</a></li>
             </ul>
+            <form class="navbar-form navbar-left">
+                <div class="input-group">
+                    <input id="q" name="q" type="text" class="form-control" placeholder="Search">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <i class="glyphicon glyphicon-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </form>
             <ul class="nav navbar-nav navbar-right">
                 <sec:authorize access="isAnonymous()">
                     <li><a href="<c:url value="/login" />"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
@@ -94,7 +110,7 @@
 
 <c:if test="${not empty error}" >
     <div class="alert alert-danger">
-        <strong>Warning!</strong> <c:out value="${error}" />
+        <strong>Notification!</strong> <c:out value="${error}" />
     </div>
 </c:if>
 
@@ -161,31 +177,38 @@
 </div><br>
 <br>
 
-<div class="inner">
-    <ul class="pagination">
-        <c:if test="${current != 1}">
-            <li><a href="${firstUrl}">&lt;&lt;</a></li>
-            <li><a href="${prevUrl}">&lt;</a></li>
-        </c:if>
+    <c:if test="${books.totalPages != 1}">
+        <div class="inner">
+            <ul class="pagination">
+                <c:if test="${current != 1}">
+                    <li><a href="${firstUrl}">&lt;&lt;</a></li>
+                    <li><a href="${prevUrl}">&lt;</a></li>
+                </c:if>
 
-        <c:forEach var="i" begin="${begin}" end="${end}">
-            <c:url var="pageUrl" value="/?page=${i}" />
-            <c:choose>
-                <c:when test="${i == current}">
-                    <li class="active"><a href="${pageUrl}"><c:out value="${i}" /></a></li>
-                </c:when>
-                <c:otherwise>
-                    <li><a href="${pageUrl}"><c:out value="${i}" /></a></li>
-                </c:otherwise>
-            </c:choose>
-        </c:forEach>
+                <c:forEach var="i" begin="${begin}" end="${end}">
+                    <c:if test="${not empty query}">
+                        <c:url var="pageUrl" value="/?page=${i}&q=${query}" />
+                    </c:if>
+                    <c:if test="${empty query}">
+                        <c:url var="pageUrl" value="/?page=${i}" />
+                    </c:if>
+                    <c:choose>
+                        <c:when test="${i == current}">
+                            <li class="active"><a href="${pageUrl}"><c:out value="${i}" /></a></li>
+                        </c:when>
+                        <c:otherwise>
+                            <li><a href="${pageUrl}"><c:out value="${i}" /></a></li>
+                        </c:otherwise>
+                    </c:choose>
+                </c:forEach>
 
-        <c:if test="${current != books.totalPages}">
-            <li><a href="${nextUrl}">&gt;</a></li>
-            <li><a href="${lastUrl}">&gt;&gt;</a></li>
-        </c:if>
-    </ul>
-</div>
+                <c:if test="${current != books.totalPages}">
+                    <li><a href="${nextUrl}">&gt;</a></li>
+                    <li><a href="${lastUrl}">&gt;&gt;</a></li>
+                </c:if>
+            </ul>
+        </div>
+    </c:if>
 
 <footer class="container-fluid text-center">
     <p>Online Library Copyright</p>

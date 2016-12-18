@@ -9,6 +9,8 @@ import com.limethecoder.data.repository.LikeRepository;
 import com.limethecoder.data.service.BookService;
 import com.limethecoder.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,5 +91,10 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
     @Override
     public List<Book> findReviewedBooks(User user) {
         return repository.findReviewedBooks(user);
+    }
+
+    @Override
+    public Page<Book> fullTextSearch(String text, Pageable pageable) {
+        return repository.fullTextSearch(text, pageable);
     }
 }
