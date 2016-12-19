@@ -2,7 +2,6 @@ package com.limethecoder.data.service.impl;
 
 
 import com.limethecoder.data.domain.Like;
-import com.limethecoder.data.domain.Rate;
 import com.limethecoder.data.domain.User;
 import com.limethecoder.data.repository.*;
 import com.limethecoder.data.service.CacheService;
@@ -129,5 +128,10 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
             return FileUtil.loadImage(user.getPhotoUrl());
         }
         return FileUtil.loadImage(DEFAULT_ICON);
+    }
+
+    @Override
+    public List<String> getAllLogins() {
+        return userRepository.getAllLogins();
     }
 }

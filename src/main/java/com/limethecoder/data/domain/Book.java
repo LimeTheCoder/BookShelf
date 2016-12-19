@@ -105,6 +105,13 @@ public class Book {
         return false;
     }
 
+    public void addReview(Review review) {
+        if(review != null && review.getUser() != null
+                &&!isReviewed(review.getUser().getLogin())) {
+            reviews.add(review);
+        }
+    }
+
     public List<Review> getReviews() {
         return reviews;
     }
