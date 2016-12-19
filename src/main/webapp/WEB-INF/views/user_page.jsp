@@ -157,6 +157,9 @@
                 <li class="active"><a href="<c:url value="#" />">${user.login}</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
+                <sec:authorize access="hasRole('ADMIN')">
+                    <li><a href="<c:url value="/admin/books" />"><span class="glyphicon glyphicon-lock"></span> Admin panel</a></li>
+                </sec:authorize>
                 <sec:authorize access="isAnonymous()">
                     <li><a href="<c:url value="/login" />"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
                     <li><a href="<c:url value="/registration" />"><span class="glyphicon glyphicon-share"></span> Sign Up</a></li>

@@ -2,14 +2,17 @@ package com.limethecoder.data.service.impl;
 
 import com.limethecoder.data.domain.Book;
 import com.limethecoder.data.domain.Like;
-import com.limethecoder.data.domain.Rate;
 import com.limethecoder.data.domain.User;
 import com.limethecoder.data.repository.BookRepository;
 import com.limethecoder.data.repository.LikeRepository;
 import com.limethecoder.data.service.BookService;
+import com.limethecoder.data.service.CacheService;
 import com.limethecoder.util.FileUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
@@ -23,27 +26,37 @@ import java.util.List;
 public class BookServiceImpl extends AbstractMongoService<Book, String>
         implements BookService {
 
+    private static final Logger logger = LoggerFactory
+            .getLogger(BookServiceImpl.class);
+
     private final static String DEFAULT_COVER = "default.jpg";
+    private final static String BOOKS_CNT = "books_cnt";
 
     private BookRepository repository;
     private LikeRepository likeRepository;
+    private CacheService cacheService;
 
     @Autowired
     public BookServiceImpl(BookRepository repository,
-                           LikeRepository likeRepository) {
+                           LikeRepository likeRepository,
+                           CacheService cacheService) {
         this.repository = repository;
         this.likeRepository = likeRepository;
+        this.cacheService = cacheService;
     }
 
     @Override
     public Book add(Book book) {
         saveCover(book);
+        cacheService.onBookInsert(book);
+        cacheService.invalidate(BOOKS_CNT);
         return repository.save(book);
     }
 
     @Override
     public Book update(Book book) {
         saveCover(book);
+        cacheService.onBookUpdate(book);
         return repository.save(book);
     }
 
@@ -56,6 +69,9 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
         if(likes != null && !likes.isEmpty()) {
             likeRepository.delete(likes);
         }
+
+        cacheService.onBookDelete(book);
+        cacheService.invalidate(BOOKS_CNT);
 
         repository.delete(bookId);
     }
@@ -72,6 +88,9 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
 
             FileUtil.saveFile(book.getCover(), filename);
             book.setCoverUrl(filename);
+            if(cacheService.exists(filename)) {
+                cacheService.invalidate(filename);
+            }
         }
     }
 
@@ -82,10 +101,18 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
 
     @Override
     public byte[] loadCover(Book book) {
-        if(FileUtil.isExists(book.getCoverUrl())) {
-            return FileUtil.loadImage(book.getCoverUrl());
+        String cover = book.getCoverUrl();
+        if(FileUtil.isExists(cover)) {
+            return FileUtil.loadImage(cover);
         }
-        return FileUtil.loadImage(DEFAULT_COVER);
+
+        if(!cacheService.exists(DEFAULT_COVER)) {
+            byte[] image = FileUtil.loadImage(DEFAULT_COVER);
+            cacheService.addImage(DEFAULT_COVER, image);
+            return image;
+        }
+
+        return cacheService.getImage(DEFAULT_COVER);
     }
 
     @Override
@@ -95,6 +122,64 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
 
     @Override
     public Page<Book> fullTextSearch(String text, Pageable pageable) {
-        return repository.fullTextSearch(text, pageable);
+        StringBuilder cntKey = new StringBuilder(CacheService.BOOKS_KEY);
+        cntKey.append("_cnt");
+        cntKey.append(CacheService.SEPARATOR);
+        cntKey.append(CacheService.QUERY);
+        cntKey.append(text);
+
+        if(cacheService.exists(CacheService.BOOKS_KEY,
+                pageable.getPageNumber() + 1, text)) {
+            List<Book> books = cacheService.getBooks(
+                    pageable.getPageNumber() + 1, text);
+            long total = Long.valueOf(cacheService.get(cntKey.toString()));
+            logger.info("Cache hit for books full text search");
+            return new PageImpl<>(books, pageable, total);
+
+        }
+
+        Page<Book> page = repository.fullTextSearch(text, pageable);
+
+        if(page.getTotalElements() != 0) {
+            cacheService.addBooks(page.getContent(), pageable.getPageNumber() + 1, text);
+            cacheService.add(cntKey.toString(),
+                    String.valueOf(page.getTotalElements()));
+        }
+
+        logger.info("Database hit for books full text search");
+        return page;
+    }
+
+    @Override
+    public Long count() {
+        if(cacheService.exists(BOOKS_CNT)) {
+            return Long.valueOf(cacheService.get(BOOKS_CNT));
+        } else {
+            long cnt = repository.count();
+            cacheService.add(BOOKS_CNT, String.valueOf(cnt));
+            return cnt;
+        }
+    }
+
+    @Override
+    public Page<Book> findAll(Pageable pageable) {
+        if(cacheService.exists(CacheService.BOOKS_KEY,
+                pageable.getPageNumber() + 1, "")) {
+            List<Book> books = cacheService.getBooks(
+                    pageable.getPageNumber() + 1, "");
+            long total = count();
+            logger.info("Cache hit for books search all");
+            return new PageImpl<>(books, pageable, total);
+        }
+
+        Page<Book> page = repository.findAll(pageable);
+
+        if(page.getTotalElements() != 0) {
+            cacheService.addBooks(page.getContent(), pageable.getPageNumber() + 1, "");
+            cacheService.add(BOOKS_CNT, String.valueOf(page.getTotalElements()));
+            logger.info("Database hit for books search all");
+        }
+
+        return page;
     }
 }

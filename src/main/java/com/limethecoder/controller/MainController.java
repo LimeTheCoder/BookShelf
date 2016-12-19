@@ -11,10 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,7 +25,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RequestMapping("/")
 public class MainController {
 
-    private final static int PAGE_SIZE = 20;
+    private final static int PAGE_SIZE = 18;
     private final static int PAGES_ON_VIEW = 5;
 
     @Autowired
@@ -43,7 +41,6 @@ public class MainController {
                        Model model) {
         if(pageNumber > 0) {
             Pageable pageable = new PageRequest(pageNumber - 1, PAGE_SIZE);
-
             Page<Book> page = query.isEmpty() ? bookService.findAll(pageable) :
                     bookService.fullTextSearch(query, pageable);
 
@@ -101,6 +98,7 @@ public class MainController {
         model.addAttribute("user", user);
         return "user_page";
     }
+
     @RequestMapping(value = "/book/{id}", method = GET)
     public String bookPage(@PathVariable String id, Model model) {
         Book book = bookService.findOne(id);

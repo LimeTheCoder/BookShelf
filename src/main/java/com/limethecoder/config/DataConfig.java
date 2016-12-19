@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import redis.clients.jedis.Jedis;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
@@ -42,7 +43,7 @@ public class DataConfig {
     public JpaVendorAdapter jpaVendorAdapter() {
         HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
         adapter.setDatabase(Database.MYSQL);
-        adapter.setShowSql(true);
+        adapter.setShowSql(false);
         adapter.setGenerateDdl(true);
         return adapter;
     }
@@ -72,4 +73,9 @@ public class DataConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public Jedis jedis() {
+        return new Jedis(env.getProperty("redis.host"),
+                Integer.valueOf(env.getProperty("redis.port")));
+    }
 }

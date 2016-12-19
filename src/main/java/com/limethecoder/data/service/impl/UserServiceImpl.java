@@ -5,6 +5,7 @@ import com.limethecoder.data.domain.Like;
 import com.limethecoder.data.domain.Rate;
 import com.limethecoder.data.domain.User;
 import com.limethecoder.data.repository.*;
+import com.limethecoder.data.service.CacheService;
 import com.limethecoder.data.service.UserService;
 import com.limethecoder.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
     private RoleRepository roleRepository;
     private BookRepository bookRepository;
     private LikeRepository likeRepository;
+    private CacheService cacheService;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -36,11 +38,13 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
     public UserServiceImpl(UserRepository userRepository,
                            RoleRepository roleRepository,
                            BookRepository bookRepository,
-                           LikeRepository likeRepository) {
+                           LikeRepository likeRepository,
+                           CacheService cacheService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.bookRepository = bookRepository;
         this.likeRepository = likeRepository;
+        this.cacheService = cacheService;
     }
 
     @Override
@@ -61,7 +65,22 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
     }
 
     @Override
+    public User findOne(String id) {
+        if(cacheService.exists(id)) {
+            return cacheService.getUser(id);
+        }
+
+        User user = getRepository().findOne(id);
+        cacheService.addUser(user);
+        return user;
+    }
+
+    @Override
     public User update(User user) {
+        if(cacheService.exists(user.getLogin())) {
+            cacheService.invalidate(user.getLogin());
+        }
+
         savePhoto(user);
         return userRepository.saveAndFlush(user);
     }
@@ -79,6 +98,9 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
             likeRepository.delete(likes);
         }
 
+        if(cacheService.exists(login)) {
+            cacheService.invalidate(login);
+        }
         userRepository.delete(login);
     }
 

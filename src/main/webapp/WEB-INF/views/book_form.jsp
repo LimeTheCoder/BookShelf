@@ -106,16 +106,16 @@
                         <div class="panel-body">
                             <div class="form-group">
                                 <label>Name:</label>
-                                <form:input path="authors[${status.index}].name" class="form-control" value="" required="required"/>
+                                <form:input path="authors[${status.index}].name" class="form-control" value="" />
                             </div>
                             <div class="form-group">
                                 <label>Surname:</label>
-                                <form:input path="authors[${status.index}].surname" class="form-control" value="" required="required"/>
+                                <form:input path="authors[${status.index}].surname" class="form-control" value="" />
                             </div>
                             <div class="form-group">
                                 <label>BirthDate:</label>
                                 <div class="controls">
-                                    <form:input path="authors[${status.index}].birthDate" class="date form-control" required="required"/>
+                                    <form:input path="authors[${status.index}].birthDate" class="date form-control" />
                                 </div>
                             </div>
                         </div>
