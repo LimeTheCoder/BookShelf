@@ -65,19 +65,13 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
 
     @Override
     public User findOne(String id) {
-        if(cacheService.exists(id)) {
-            return cacheService.getUser(id);
-        }
-
-        User user = getRepository().findOne(id);
-        cacheService.addUser(user);
-        return user;
+        return getRepository().findOne(id);
     }
 
     @Override
     public User update(User user) {
-        if(cacheService.exists(user.getLogin())) {
-            cacheService.invalidate(user.getLogin());
+        if(cacheService.userExists(user.getLogin())) {
+            cacheService.invalidateUserKeys(user.getLogin());
         }
 
         savePhoto(user);
@@ -97,8 +91,8 @@ public class UserServiceImpl extends AbstractJPAService<User, String>
             likeRepository.delete(likes);
         }
 
-        if(cacheService.exists(login)) {
-            cacheService.invalidate(login);
+        if(cacheService.userExists(user.getLogin())) {
+            cacheService.invalidateUserKeys(user.getLogin());
         }
         userRepository.delete(login);
     }

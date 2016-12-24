@@ -145,6 +145,11 @@
 			<version>${logback.version}</version>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<version>${data.redis}</version>
+		</dependency>
+		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 			<version>${redis.client}</version>
@@ -159,7 +164,6 @@
 			<artifactId>javafaker</artifactId>
 			<version>0.12</version>
 		</dependency>
-
 	</dependencies>
 
 	<build>

@@ -8,10 +8,14 @@ import java.util.List;
 
 public interface CacheService {
     String BOOKS_KEY = "books";
+    String USER_KEY = "user";
     String SEPARATOR = "&";
     String PAGE = "p=";
     String QUERY = "q=";
     String RANGE = "range";
+    String LIKED = "liked";
+    String RATED = "rated";
+
     int EXPIRE_TIME = 300;
 
     void addBooks(List<Book> books, int page, String query);
@@ -28,9 +32,11 @@ public interface CacheService {
 
     boolean exists(String typeKey, int page, String query);
     boolean exists(String key);
+    boolean userExists(String login);
 
     void invalidateCache();
     void invalidate(String key);
+    void invalidateUserKeys(String login);
 
     void onBookUpdate(Book book);
     void onBookDelete(Book book);

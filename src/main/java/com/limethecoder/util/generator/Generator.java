@@ -3,6 +3,9 @@ package com.limethecoder.util.generator;
 
 import com.github.javafaker.Faker;
 import com.limethecoder.data.domain.*;
+import com.limethecoder.data.repository.BookRepository;
+import com.limethecoder.data.repository.LikeRepository;
+import com.limethecoder.data.repository.UserRepository;
 import com.limethecoder.data.service.BookService;
 import com.limethecoder.data.service.ConstantsService;
 import com.limethecoder.data.service.LikeService;
@@ -17,32 +20,35 @@ import java.util.List;
 @Service
 public class Generator {
     private Faker faker;
-    private UserService userService;
-    private BookService bookService;
     private LikeService likeService;
     private ConstantsService constantsService;
     private List<String> logins;
+    private UserRepository userRepository;
 
     @Autowired
-    public Generator(UserService userService,
-                     BookService bookService,
-                     LikeService likeService,
-                     ConstantsService constantsService) {
+    private BookRepository bookRepository;
+
+    @Autowired
+    public Generator(LikeService likeService,
+                     ConstantsService constantsService,
+                     UserRepository userRepository) {
         faker = new Faker();
-        this.userService = userService;
-        this.bookService = bookService;
         this.likeService = likeService;
         this.constantsService = constantsService;
-        logins = userService.getAllLogins();
+        this.userRepository = userRepository;
+        logins = userRepository.getAllLogins();
     }
 
     public User generateUser() {
         User user = new User();
-        user.setLogin(faker.name().username());
+        String[] parts = faker.name().username().split("\\.");
+        user.setLogin(parts[0] + "_" + parts[1]);
         user.setName(faker.name().firstName());
         user.setSurname(faker.name().lastName());
         user.setCity(faker.address().cityName());
         user.setPassword(faker.name().username());
+        user.setEnabled(true);
+
         return user;
     }
 
@@ -83,7 +89,7 @@ public class Generator {
         return author;
     }
 
-    public Book createBook() {
+    public Book generateBook() {
         Book book = new Book();
         book.setPublisher(generatePublisher());
 
@@ -110,20 +116,31 @@ public class Generator {
         book.setPublishYear(faker.number().numberBetween(1912, 2017));
 
         List<Review> reviews = new ArrayList<>();
-        int num = faker.number().randomDigit() % 10;
+        int num = (int)faker.number().randomNumber() % 28;
         book.setReviews(reviews);
         for(int i = 0; i < num; i++) {
-            book.addReview(generateReview(userService.findOne(
-                    logins.get(faker.number().randomDigit() % logins.size()))));
+            book.addReview(generateReview(userRepository.findOne(
+                    logins.get((int)Math.abs(faker.number().randomNumber()) % logins.size()))));
         }
 
         book.setDescription(faker.lorem().fixedString(35));
-        Book added = bookService.add(book);
-        int q = faker.number().randomDigit() % 15;
-        for(int i = 0; i < q ;i++) {
-            likeService.like(logins.get(faker.number().randomDigit() % logins.size()),
-                    book.getId());
-        }
+
         return book;
+    }
+
+    public void generateBunchOfBooks(int size) {
+        List<Book> books = new ArrayList<>();
+        for(int i = 0; i < size; i++) {
+            books.add(generateBook());
+        }
+        books = bookRepository.insert(books);
+
+        for(Book book : books) {
+            int q = (int) Math.abs(faker.number().randomNumber()) % 50;
+            for (int i = 0; i < q; i++) {
+                likeService.like(logins.get((int) Math.abs(faker.number().randomNumber()) % logins.size()),
+                        book.getId());
+            }
+        }
     }
 }

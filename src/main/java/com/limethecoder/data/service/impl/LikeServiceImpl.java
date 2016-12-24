@@ -5,7 +5,10 @@ import com.limethecoder.data.domain.Like;
 import com.limethecoder.data.repository.BookRepository;
 import com.limethecoder.data.repository.LikeRepository;
 import com.limethecoder.data.repository.UserRepository;
+import com.limethecoder.data.service.CacheService;
 import com.limethecoder.data.service.LikeService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,9 @@ import java.util.stream.Collectors;
 public class LikeServiceImpl extends AbstractMongoService<Like, String>
         implements LikeService {
 
+    private static final Logger logger = LoggerFactory
+            .getLogger(LikeServiceImpl.class);
+
     @Autowired
     private LikeRepository likeRepository;
 
@@ -26,6 +32,9 @@ public class LikeServiceImpl extends AbstractMongoService<Like, String>
 
     @Autowired
     private BookRepository bookRepository;
+
+    @Autowired
+    private CacheService cacheService;
 
     @Override
     public Like findLike(String userId, String bookId) {
@@ -42,6 +51,10 @@ public class LikeServiceImpl extends AbstractMongoService<Like, String>
         if(!userRepository.exists(userId) ||
                 !bookRepository.exists(bookId)) {
             return;
+        }
+
+        if(cacheService.userExists(userId)) {
+            cacheService.invalidateUserKeys(userId);
         }
 
         likeRepository.delete(userId, bookId);
@@ -70,12 +83,28 @@ public class LikeServiceImpl extends AbstractMongoService<Like, String>
 
     @Override
     public List<Book> findLikedBooks(String userId) {
-        List<Like> likes = findByUserId(userId);
-        if(likes == null || likes.isEmpty()) {
-            return null;
+        String key = new StringBuilder(CacheService.USER_KEY)
+                .append(CacheService.SEPARATOR)
+                .append(userId)
+                .append(CacheService.SEPARATOR)
+                .append(CacheService.LIKED).toString();
+
+        if(cacheService.exists(key)) {
+            logger.info("Cache hit for liked books");
+            return cacheService.getBooks(key);
+        } else {
+            List<Like> likes = findByUserId(userId);
+            if (likes == null || likes.isEmpty()) {
+                return null;
+            }
+
+            List<Book> liked = likes.stream().map((x) -> bookRepository
+                    .findOne(x.getBookId()))
+                    .collect(Collectors.toList());
+            cacheService.addBooks(key, liked);
+            logger.info("Database hit for liked books");
+            return liked;
         }
-        return likes.stream().map((x) -> bookRepository.findOne(x.getBookId()))
-                .collect(Collectors.toList());
     }
 
     @Override

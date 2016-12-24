@@ -29,7 +29,7 @@ public class MongoConfig extends AbstractMongoConfiguration {
 
     @Override
     public Mongo mongo() throws Exception {
-        return new MongoClient("localhost");
+        return new MongoClient("localhost", 27100);
     }
 
 

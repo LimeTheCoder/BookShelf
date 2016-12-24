@@ -11,10 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
 
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,12 +25,12 @@ public class CacheServiceImpl implements CacheService {
     private static final Logger logger = LoggerFactory
             .getLogger(CacheServiceImpl.class);
 
-    private Jedis jedis;
+    private JedisPool jedisPool;
     private Gson gson = new Gson();
 
     @Autowired
-    public CacheServiceImpl(Jedis jedis) {
-        this.jedis = jedis;
+    public CacheServiceImpl(JedisPool jedisPool) {
+        this.jedisPool = jedisPool;
     }
 
     @Override
@@ -36,44 +38,53 @@ public class CacheServiceImpl implements CacheService {
         String data = gson.toJson(books);
         String key = buildKey(BOOKS_KEY, page, query);
 
-        if(query.isEmpty()) {
-            String rangeKey = RANGE + key;
-            String range = books.get(0).getId() + SEPARATOR +
-                    books.get(books.size() - 1).getId();
-            jedis.set(rangeKey, range);
-            jedis.expire(rangeKey, EXPIRE_TIME);
-        }
+        try (Jedis jedis = jedisPool.getResource()) {
+            if (query.isEmpty()) {
+                String rangeKey = RANGE + key;
+                String range = books.get(0).getId() + SEPARATOR +
+                        books.get(books.size() - 1).getId();
+                jedis.set(rangeKey, range);
+                jedis.expire(rangeKey, EXPIRE_TIME);
+            }
 
-        jedis.set(key, data);
-        jedis.expire(key, EXPIRE_TIME);
+            jedis.set(key, data);
+            jedis.expire(key, EXPIRE_TIME);
+        }
     }
 
     @Override
     public void addBooks(String key, List<Book> books) {
         String data = gson.toJson(books);
-
-        jedis.set(key, data);
-        jedis.expire(key, EXPIRE_TIME);
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.set(key, data);
+            jedis.expire(key, EXPIRE_TIME);
+        }
     }
 
     @Override
     public void addUser(User user) {
         String data = gson.toJson(user);
-        jedis.set(user.getLogin(), data);
-        jedis.expire(user.getLogin(), EXPIRE_TIME);
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.set(USER_KEY + SEPARATOR + user.getLogin(), data);
+            jedis.expire(USER_KEY + SEPARATOR + user.getLogin(), EXPIRE_TIME);
+        }
     }
 
     @Override
     public void addImage(String key, byte[] image) {
         String data = gson.toJson(image);
-        jedis.set(key, data);
-        jedis.expire(key, EXPIRE_TIME);
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.set(key, data);
+            jedis.expire(key, EXPIRE_TIME);
+        }
     }
 
     @Override
     public void add(String key, String value) {
-        jedis.set(key, value);
-        jedis.expire(key, EXPIRE_TIME);
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.set(key, value);
+            jedis.expire(key, EXPIRE_TIME);
+        }
     }
 
     @Override
@@ -84,117 +95,214 @@ public class CacheServiceImpl implements CacheService {
 
     @Override
     public List<Book> getBooks(String key) {
-        String data = jedis.get(key);
-        Type type = new TypeToken<List<Book>>(){}.getType();
+        try (Jedis jedis = jedisPool.getResource()) {
+            String data = jedis.get(key);
+            Type type = new TypeToken<List<Book>>() {
+            }.getType();
 
-        return gson.fromJson(data, type);
+            jedis.expire(key, EXPIRE_TIME);
+            return gson.fromJson(data, type);
+        }
     }
 
     @Override
     public User getUser(String login) {
-        String data = jedis.get(login);
-        return gson.fromJson(data, User.class);
+        try (Jedis jedis = jedisPool.getResource()) {
+            String data = jedis.get(USER_KEY + SEPARATOR + login);
+            return gson.fromJson(data, User.class);
+        }
     }
 
     @Override
     public byte[] getImage(String key) {
-        String data = jedis.get(key);
-        return gson.fromJson(data, byte[].class);
+        try (Jedis jedis = jedisPool.getResource()) {
+            String data = jedis.get(key);
+            return gson.fromJson(data, byte[].class);
+        }
     }
 
     @Override
     public String get(String key) {
-        jedis.expire(key, EXPIRE_TIME);
-        return jedis.get(key);
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.expire(key, EXPIRE_TIME);
+            return jedis.get(key);
+        }
     }
 
     @Override
     public boolean exists(String typeKey, int page, String query) {
-        String key = buildKey(typeKey, page, query);
-        return jedis.exists(key);
+        try (Jedis jedis = jedisPool.getResource()) {
+            String key = buildKey(typeKey, page, query);
+            return jedis.exists(key);
+        }
     }
 
     @Override
     public boolean exists(String key) {
-        return jedis.exists(key);
+        try (Jedis jedis = jedisPool.getResource()) {
+            return jedis.exists(key);
+        }
+    }
+
+    @Override
+    public boolean userExists(String login) {
+        String key = USER_KEY + SEPARATOR + login;
+        try (Jedis jedis = jedisPool.getResource()) {
+            Set<String> keys = jedis.keys("*");
+            if (keys == null || keys.isEmpty()) {
+                return false;
+            }
+
+            keys = keys.stream().filter((x) -> x.startsWith(USER_KEY + SEPARATOR + login))
+                    .collect(Collectors.toSet());
+
+            if (keys == null || keys.isEmpty()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
     public void invalidateCache() {
-        jedis.flushDB();
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.flushDB();
+        }
     }
 
     @Override
     public void invalidate(String key) {
-        jedis.del(key);
+        try (Jedis jedis = jedisPool.getResource()) {
+            jedis.del(key);
+        }
+    }
+
+    @Override
+    public void invalidateUserKeys(String login) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            Set<String> keys = jedis.keys("*");
+            if (keys == null || keys.isEmpty()) {
+                return;
+            }
+
+            keys = keys.stream().filter((x) -> x.startsWith(USER_KEY + SEPARATOR + login))
+                    .collect(Collectors.toSet());
+
+            for(String key : keys) {
+                jedis.del(key);
+            }
+        }
     }
 
 
     @Override
     public void onBookUpdate(Book book) {
         invalidateBooksQueryCache();
+        invalidateUsersBooks(book);
 
-        Set<String> keys = jedis.keys("*");
-        if(keys == null || keys.isEmpty()) {
-            return;
-        }
-
-        keys = keys.stream().filter((x) -> x.startsWith("books&"))
-                .collect(Collectors.toSet());
-
-        String pageKey = null;
-
-        for(String key : keys) {
-            String data = jedis.get(RANGE + key);
-            String[] range = data.split(SEPARATOR);
-            if(book.getId().compareTo(range[0]) >= 0 &&
-                    book.getId().compareTo(range[1]) <= 0) {
-                pageKey = key;
-                break;
+        try (Jedis jedis = jedisPool.getResource()) {
+            Set<String> keys = jedis.keys("*");
+            if (keys == null || keys.isEmpty()) {
+                return;
             }
+
+            keys = keys.stream().filter((x) -> x.startsWith("books&"))
+                    .collect(Collectors.toSet());
+
+            String pageKey = null;
+
+            for (String key : keys) {
+                if(!jedis.exists(RANGE + key)) {
+                    continue;
+                }
+
+                String data = jedis.get(RANGE + key);
+                String[] range = data.split(SEPARATOR);
+                if (book.getId().compareTo(range[0]) >= 0 &&
+                        book.getId().compareTo(range[1]) <= 0) {
+                    pageKey = key;
+                    break;
+                }
+            }
+
+
+            logger.info("Update " + pageKey);
+
+            if (pageKey == null) {
+                return;
+            }
+
+            invalidate(pageKey);
+            invalidate(RANGE + pageKey);
         }
-
-        logger.info("Update " + pageKey);
-
-        if(pageKey == null) {
-            return;
-        }
-
-        invalidate(pageKey);
-        invalidate(RANGE + pageKey);
     }
 
     @Override
     public void onBookDelete(Book book) {
         invalidateBooksQueryCache();
+        invalidateUsersBooks(book);
 
-        Set<String> all = jedis.keys("*");
-        if(all == null || all.isEmpty()) {
-            return;
-        }
-
-        List<String> keys = all.stream().filter((x) -> x.startsWith("books&"))
-                .sorted()
-                .collect(Collectors.toList());
-
-
-        boolean isFound = false;
-        for(String key : keys) {
-            String data = jedis.get(RANGE + key);
-            String[] range = data.split(SEPARATOR);
-
-            if (!isFound) {
-                if (book.getId().compareTo(range[0]) >= 0 &&
-                        book.getId().compareTo(range[1]) <= 0) {
-                    isFound = true;
-                }
+        try (Jedis jedis = jedisPool.getResource()) {
+            Set<String> all = jedis.keys("*");
+            if (all == null || all.isEmpty()) {
+                return;
             }
 
-            if(isFound) {
-                invalidate(key);
-                invalidate(RANGE + key);
+            List<String> keys = all.stream().filter((x) -> x.startsWith("books&"))
+                    .sorted()
+                    .collect(Collectors.toList());
 
-                logger.info("Delete " + key);
+
+            boolean isFound = false;
+            for (String key : keys) {
+                if(!jedis.exists(RANGE + key)) {
+                    continue;
+                }
+
+                String data = jedis.get(RANGE + key);
+                String[] range = data.split(SEPARATOR);
+
+                if (!isFound) {
+                    if (book.getId().compareTo(range[0]) >= 0 &&
+                            book.getId().compareTo(range[1]) <= 0) {
+                        isFound = true;
+                    }
+                }
+
+                if (isFound) {
+                    invalidate(key);
+                    invalidate(RANGE + key);
+
+                    logger.info("Delete " + key);
+                }
+            }
+        }
+    }
+
+    private void invalidateUsersBooks(Book book) {
+        invalidateUsersBooks(book, "liked");
+        invalidateUsersBooks(book, "rated");
+    }
+
+    private void invalidateUsersBooks(Book book, String type) {
+        try (Jedis jedis = jedisPool.getResource()) {
+            Set<String> all = jedis.keys("*");
+            if (all == null || all.isEmpty()) {
+                return;
+            }
+
+            List<String> userKeys = all.stream()
+                    .filter((x) -> x.matches("^user&(.)+&" + type + "$"))
+                    .collect(Collectors.toList());
+
+            if (userKeys != null && !userKeys.isEmpty()) {
+                for (String key : userKeys) {
+                    List<Book> books = getBooks(key);
+                    if (books.contains(book)) {
+                        invalidateUserKeys(key.split(SEPARATOR)[1]);
+                    }
+                }
             }
         }
     }
@@ -203,25 +311,27 @@ public class CacheServiceImpl implements CacheService {
     public void onBookInsert(Book book) {
         invalidateBooksQueryCache();
 
-        Set<String> all = jedis.keys("*");
-        if(all == null || all.isEmpty()) {
-            return;
+        try (Jedis jedis = jedisPool.getResource()) {
+            Set<String> all = jedis.keys("*");
+            if (all == null || all.isEmpty()) {
+                return;
+            }
+
+            List<String> keys = all.stream()
+                    .filter((x) -> x.startsWith("books&"))
+                    .sorted()
+                    .collect(Collectors.toList());
+
+            if (keys == null || keys.isEmpty()) {
+                return;
+            }
+
+            String key = keys.get(keys.size() - 1);
+
+            logger.info("Insertion key: " + key);
+            invalidate(key);
+            invalidate(RANGE + key);
         }
-
-        List<String> keys = all.stream()
-                .filter((x) -> x.startsWith("books&"))
-                .sorted()
-                .collect(Collectors.toList());
-
-        if (keys == null || keys.isEmpty()) {
-            return;
-        }
-
-        String key = keys.get(keys.size() - 1);
-
-        logger.info("Insertion key: " + key);
-        invalidate(key);
-        invalidate(RANGE + key);
     }
 
 
@@ -241,12 +351,16 @@ public class CacheServiceImpl implements CacheService {
     }
 
     private void invalidateBooksQueryCache() {
-        Set<String> keys = jedis.keys("*");
-        if(keys != null && !keys.isEmpty()) {
-            keys = keys.stream().filter((x) -> x.startsWith("books&")
-                    && x.contains("q")).collect(Collectors.toSet());
-            for(String key : keys) {
-                jedis.del(key);
+        try (Jedis jedis = jedisPool.getResource()) {
+            Set<String> keys = jedis.keys("*");
+            Predicate<String> predicate = (x) -> x.startsWith("books")
+                    && x.contains("q");
+            if (keys != null && !keys.isEmpty()) {
+                keys = keys.stream().filter(predicate)
+                        .collect(Collectors.toSet());
+                for (String key : keys) {
+                    jedis.del(key);
+                }
             }
         }
     }

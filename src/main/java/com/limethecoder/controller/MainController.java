@@ -5,6 +5,7 @@ import com.limethecoder.data.domain.*;
 import com.limethecoder.data.service.BookService;
 import com.limethecoder.data.service.LikeService;
 import com.limethecoder.data.service.UserService;
+import com.limethecoder.util.generator.Generator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -34,11 +35,14 @@ public class MainController {
     private UserService userService;
     @Autowired
     private LikeService likeService;
+    @Autowired
+    private Generator generator;
 
     @RequestMapping(method = GET)
     public String home(@RequestParam(name = "page", defaultValue = "1") int pageNumber,
                        @RequestParam(name = "q", defaultValue = "") String query,
                        Model model) {
+
         if(pageNumber > 0) {
             Pageable pageable = new PageRequest(pageNumber - 1, PAGE_SIZE);
             Page<Book> page = query.isEmpty() ? bookService.findAll(pageable) :
@@ -76,6 +80,14 @@ public class MainController {
         }
 
         return "home";
+    }
+
+    @RequestMapping(value = "/gen", method = GET)
+    public String generate(@RequestParam(name = "size", defaultValue = "25") int size,
+                           Model model) {
+        generator.generateBunchOfBooks(size);
+        model.addAttribute("message", "Books inserted");
+        return "error";
     }
 
     @RequestMapping(value = "/user/{login}", method = GET)

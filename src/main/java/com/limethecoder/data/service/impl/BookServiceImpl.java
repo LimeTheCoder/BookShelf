@@ -88,9 +88,6 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
 
             FileUtil.saveFile(book.getCover(), filename);
             book.setCoverUrl(filename);
-            if(cacheService.exists(filename)) {
-                cacheService.invalidate(filename);
-            }
         }
     }
 
@@ -106,18 +103,28 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
             return FileUtil.loadImage(cover);
         }
 
-        if(!cacheService.exists(DEFAULT_COVER)) {
-            byte[] image = FileUtil.loadImage(DEFAULT_COVER);
-            cacheService.addImage(DEFAULT_COVER, image);
-            return image;
-        }
-
-        return cacheService.getImage(DEFAULT_COVER);
+        byte[] image = FileUtil.loadImage(DEFAULT_COVER);
+        cacheService.addImage(DEFAULT_COVER, image);
+        return image;
     }
 
     @Override
     public List<Book> findReviewedBooks(User user) {
-        return repository.findReviewedBooks(user);
+        String key = new StringBuilder(CacheService.USER_KEY)
+                .append(CacheService.SEPARATOR)
+                .append(user.getLogin())
+                .append(CacheService.SEPARATOR)
+                .append(CacheService.RATED).toString();
+
+        if(cacheService.exists(key)) {
+            logger.info("Cache hit for reviewed books");
+            return cacheService.getBooks(key);
+        } else {
+            List<Book> rated = repository.findReviewedBooks(user);
+            cacheService.addBooks(key, rated);
+            logger.info("Database hit for reviewed books");
+            return rated;
+        }
     }
 
     @Override
@@ -172,7 +179,7 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
             return new PageImpl<>(books, pageable, total);
         }
 
-        Page<Book> page = repository.findAll(pageable);
+        Page<Book> page = repository.findAllByOrderByIdAsc(pageable);
 
         if(page.getTotalElements() != 0) {
             cacheService.addBooks(page.getContent(), pageable.getPageNumber() + 1, "");

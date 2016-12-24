@@ -15,7 +15,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
@@ -69,13 +70,13 @@ public class DataConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    JedisPool jedisPool() {
+        return new JedisPool(new JedisPoolConfig(),
+                env.getProperty("redis.host"));
     }
 
     @Bean
-    public Jedis jedis() {
-        return new Jedis(env.getProperty("redis.host"),
-                Integer.valueOf(env.getProperty("redis.port")));
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

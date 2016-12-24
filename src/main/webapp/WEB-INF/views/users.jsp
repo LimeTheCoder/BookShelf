@@ -22,7 +22,7 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
         <div class="navbar-header">
-            <a class="navbar-brand" href="#">BookShelfAdmin</a>
+            <a class="navbar-brand" href="<c:url value="/" />">BookShelf</a>
         </div>
         <ul class="nav navbar-nav">
             <li class="active"><a href="<c:url value="/admin/users" />">Users</a></li>
