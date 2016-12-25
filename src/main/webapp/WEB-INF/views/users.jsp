@@ -27,6 +27,7 @@
         <ul class="nav navbar-nav">
             <li class="active"><a href="<c:url value="/admin/users" />">Users</a></li>
             <li><a href="<c:url value="/admin/books" />">Books</a></li>
+            <li><a href="<c:url value="/admin/stats" />">Statistic</a></li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
                 <li><a href="#" onclick="document.getElementById('logout').submit();"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>

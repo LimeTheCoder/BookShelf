@@ -14,7 +14,9 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -332,6 +334,22 @@ public class CacheServiceImpl implements CacheService {
             invalidate(key);
             invalidate(RANGE + key);
         }
+    }
+
+    @Override
+    public Map<String, String> getCache() {
+        Map<String, String> map = new HashMap<>();
+
+        try (Jedis jedis = jedisPool.getResource()) {
+            Set<String> keys = jedis.keys("*");
+            if(keys != null && !keys.isEmpty()) {
+                for (String key : keys) {
+                    map.put(key, jedis.get(key));
+                }
+            }
+        }
+
+        return map;
     }
 
 

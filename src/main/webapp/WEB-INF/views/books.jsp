@@ -28,6 +28,7 @@
         <ul class="nav navbar-nav">
             <li><a href="<c:url value="/admin/users" />">Users</a></li>
             <li class="active"><a href="<c:url value="/admin/books" />">Books</a></li>
+            <li><a href="<c:url value="/admin/stats" />">Statistic</a></li>
         </ul>
         <form class="navbar-form navbar-left">
             <div class="input-group">

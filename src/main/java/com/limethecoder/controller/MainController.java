@@ -3,10 +3,15 @@ package com.limethecoder.controller;
 
 import com.limethecoder.data.domain.*;
 import com.limethecoder.data.service.BookService;
+import com.limethecoder.data.service.CacheService;
 import com.limethecoder.data.service.LikeService;
 import com.limethecoder.data.service.UserService;
 import com.limethecoder.util.generator.Generator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,11 +30,15 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @Controller
+@PropertySource("classpath:app.properties")
 @RequestMapping("/")
 public class MainController {
 
     private final static int PAGE_SIZE = 18;
     private final static int PAGES_ON_VIEW = 5;
+
+    private static final Logger logger = LoggerFactory
+            .getLogger(MainController.class);
 
     @Autowired
     private BookService bookService;
@@ -35,8 +46,15 @@ public class MainController {
     private UserService userService;
     @Autowired
     private LikeService likeService;
+
+    @Autowired
+    private CacheService cacheService;
+
     @Autowired
     private Generator generator;
+
+    @Resource
+    private Environment env;
 
     @RequestMapping(method = GET)
     public String home(@RequestParam(name = "page", defaultValue = "1") int pageNumber,
@@ -82,7 +100,7 @@ public class MainController {
         return "home";
     }
 
-    @RequestMapping(value = "/gen", method = GET)
+    @RequestMapping(value = "gen", method = GET)
     public String generate(@RequestParam(name = "size", defaultValue = "25") int size,
                            Model model) {
         generator.generateBunchOfBooks(size);
@@ -90,7 +108,7 @@ public class MainController {
         return "error";
     }
 
-    @RequestMapping(value = "/user/{login}", method = GET)
+    @RequestMapping(value = "user/{login}", method = GET)
     public String userPage(@PathVariable String login, Model model) {
         User user = userService.findOne(login);
         if(user == null) {
@@ -111,7 +129,7 @@ public class MainController {
         return "user_page";
     }
 
-    @RequestMapping(value = "/book/{id}", method = GET)
+    @RequestMapping(value = "book/{id}", method = GET)
     public String bookPage(@PathVariable String id, Model model) {
         Book book = bookService.findOne(id);
         model.addAttribute(book);
@@ -119,7 +137,7 @@ public class MainController {
         return "book_page";
     }
 
-    @RequestMapping(value = "/book/{id}", method = POST)
+    @RequestMapping(value = "book/{id}", method = POST)
     public String addReview(@PathVariable String id,
                             @ModelAttribute("newReview") Review review,
                             Model model, Principal principal) {
@@ -139,7 +157,71 @@ public class MainController {
         return "book_page";
     }
 
-    @RequestMapping(value = "/getCover/{id}")
+    @RequestMapping(value = "admin/stats", method = GET)
+    public String statsPage(Model model, Principal principal,
+                            @RequestParam(name = "clear", defaultValue = "")
+                                    String clear,
+                            @RequestParam(name="dump", defaultValue = "")
+                            String dump) {
+        if(!clear.isEmpty()) {
+            cacheService.invalidateCache();
+            return "redirect:/admin/stats";
+        }
+
+        if(!dump.isEmpty()) {
+            try {
+                String command = String.format("mongodump --host %s --port %s --db %s --out %s",
+                        env.getProperty("mongo.host"),
+                        env.getProperty("mongo.port"),
+                        env.getProperty("mongo.db"),
+                        env.getProperty("dump.storage"));
+                logger.info("Command: " + command);
+                Process process = Runtime.getRuntime().exec(command);
+                try {
+                    process.waitFor();
+                } catch (InterruptedException e) {
+                    logger.error("In db dump", e);
+                }
+            } catch (IOException e) {
+                logger.error("Error occurred during db dump", e);
+            }
+            logger.info("Database dumped successfully");
+            return "redirect:/admin/stats";
+        }
+
+        model.addAttribute("cache", cacheService.getCache());
+        testCacheSpeed(principal.getName(), model);
+        return "stats";
+    }
+
+    private void testCacheSpeed(String login, Model model) {
+        if(cacheService.exists("dbTime") && cacheService.exists("cacheTime")) {
+            model.addAttribute("dbTime", cacheService.get("dbTime"));
+            model.addAttribute("cacheTime", cacheService.get("cacheTime"));
+            return;
+        }
+
+        cacheService.invalidateUserKeys(login);
+        User user = userService.findOne(login);
+
+        long startTime = System.currentTimeMillis();
+        bookService.findReviewedBooks(user);
+        likeService.findLikedBooks(login);
+        long dbEndTime = System.currentTimeMillis();
+        bookService.findReviewedBooks(user);
+        likeService.findLikedBooks(login);
+        long cacheEndTime = System.currentTimeMillis();
+
+        model.addAttribute("dbTime", dbEndTime - startTime);
+        model.addAttribute("cacheTime", cacheEndTime - dbEndTime);
+
+        cacheService.add("dbTime",
+                String.valueOf(dbEndTime - startTime));
+        cacheService.add("cacheTime",
+                String.valueOf(cacheEndTime - dbEndTime));
+    }
+
+    @RequestMapping(value = "getCover/{id}")
     @ResponseBody
     public byte[] getBookCover(@PathVariable String id) {
         Book book = bookService.findOne(id);
@@ -149,7 +231,7 @@ public class MainController {
         return bookService.loadCover(book);
     }
 
-    @RequestMapping(value = "/getIcon/{login}")
+    @RequestMapping(value = "getIcon/{login}")
     @ResponseBody
     public byte[] getUserIcon(@PathVariable String login) {
         User user = userService.findOne(login);

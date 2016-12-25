@@ -4,6 +4,7 @@ import com.limethecoder.data.domain.Book;
 import com.limethecoder.data.domain.User;
 
 import java.util.List;
+import java.util.Map;
 
 
 public interface CacheService {
@@ -41,4 +42,6 @@ public interface CacheService {
     void onBookUpdate(Book book);
     void onBookDelete(Book book);
     void onBookInsert(Book book);
+
+    Map<String, String> getCache();
 }
