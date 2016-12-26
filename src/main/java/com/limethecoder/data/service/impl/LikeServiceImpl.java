@@ -68,6 +68,10 @@ public class LikeServiceImpl extends AbstractMongoService<Like, String>
             return null;
         }
 
+        if(cacheService.userExists(userId)) {
+            cacheService.invalidateUserKeys(userId);
+        }
+
         return likeRepository.insert(new Like(userId, bookId));
     }
 

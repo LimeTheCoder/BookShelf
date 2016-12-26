@@ -133,7 +133,16 @@
                 </tbody>
             </table>
         </div>
-        <span class="glyphicon glyphicon-heart red-heart"></span>
+        <sec:authorize access="isAuthenticated()">
+            <c:choose>
+                <c:when test="${isLiked}">
+                    <span class="glyphicon glyphicon-heart red-heart" id="like"></span>
+                </c:when>
+                <c:otherwise>
+                    <span class="glyphicon glyphicon-heart-empty red-heart" id="like"></span>
+                </c:otherwise>
+            </c:choose>
+        </sec:authorize>
     </div>
 </div>
         <hr/>
@@ -356,5 +365,24 @@
 <script src="${pageContext.request.contextPath}/webjars/jquery/3.1.1/jquery.min.js"></script>
 <script src="${pageContext.request.contextPath}/webjars/bootstrap/3.3.7-1/js/bootstrap.min.js"></script>
 <script src="<c:url value="/resources/js/stars.js" />"></script>
+<script>
+    $(document).ready(function() {
+
+        $('#like').click(function() {
+            $.ajax({
+                url : "<c:url value="/book/${book.id}/like" />",
+                success : function(data) {
+                    var like = $('#like');
+
+                    if(like.hasClass("glyphicon-heart-empty")) {
+                        like.removeClass("glyphicon-heart-empty").addClass("glyphicon-heart");
+                    } else if(like.hasClass("glyphicon-heart")) {
+                        like.removeClass("glyphicon-heart").addClass("glyphicon-heart-empty");
+                    }
+                }
+            });
+        })
+    });
+</script>
 </body>
 </html>

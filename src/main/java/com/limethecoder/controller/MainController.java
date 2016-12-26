@@ -130,10 +130,15 @@ public class MainController {
     }
 
     @RequestMapping(value = "book/{id}", method = GET)
-    public String bookPage(@PathVariable String id, Model model) {
+    public String bookPage(@PathVariable String id, Model model,
+                           Principal principal) {
         Book book = bookService.findOne(id);
         model.addAttribute(book);
         model.addAttribute("newReview", new Review());
+        if(principal != null) {
+            model.addAttribute("isLiked", likeService.isLiked(
+                    principal.getName(), id));
+        }
         return "book_page";
     }
 
@@ -161,6 +166,22 @@ public class MainController {
     public String topRated(Model model) {
         model.addAttribute("books", bookService.findMostRated(PAGE_SIZE));
         return "top_rated";
+    }
+
+    @RequestMapping(value = "book/{id}/like", method = GET)
+    public @ResponseBody String likeHandler(@PathVariable String id,
+                                            Principal principal) {
+        if(principal == null) {
+            return "";
+        }
+
+        if(likeService.isLiked(principal.getName(), id)) {
+            likeService.delete(principal.getName(), id);
+        } else {
+            likeService.like(principal.getName(), id);
+        }
+
+        return "{'response' : 'success'}";
     }
 
     @RequestMapping(value = "admin/stats", method = GET)
