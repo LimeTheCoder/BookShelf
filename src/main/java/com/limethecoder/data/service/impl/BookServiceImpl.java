@@ -18,7 +18,9 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -155,6 +157,17 @@ public class BookServiceImpl extends AbstractMongoService<Book, String>
 
         logger.info("Database hit for books full text search");
         return page;
+    }
+
+    @Override
+    public List<Book> findMostRated(int cnt) {
+        List<String> ids = repository.findMostRated(cnt);
+        if(ids == null) {
+            return new ArrayList<>();
+        }
+
+        return ids.stream().map(this::findOne).
+                collect(Collectors.toList());
     }
 
     @Override

@@ -77,6 +77,7 @@
         <div class="collapse navbar-collapse" id="myNavbar">
             <ul class="nav navbar-nav">
                 <li class="active"><a href="<c:url value="/" />">Home</a></li>
+                <li><a href="<c:url value="/top" />">Top Rated</a></li>
             </ul>
             <form class="navbar-form navbar-left">
                 <div class="input-group">

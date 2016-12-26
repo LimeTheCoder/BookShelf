@@ -12,4 +12,5 @@ public interface BookService extends Service<Book, String> {
     byte[] loadCover(Book book);
     List<Book> findReviewedBooks(User user);
     Page<Book> fullTextSearch(String text, Pageable pageable);
+    List<Book> findMostRated(int cnt);
 }

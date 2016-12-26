@@ -157,6 +157,12 @@ public class MainController {
         return "book_page";
     }
 
+    @RequestMapping(value = "top", method = GET)
+    public String topRated(Model model) {
+        model.addAttribute("books", bookService.findMostRated(PAGE_SIZE));
+        return "top_rated";
+    }
+
     @RequestMapping(value = "admin/stats", method = GET)
     public String statsPage(Model model, Principal principal,
                             @RequestParam(name = "clear", defaultValue = "")

@@ -12,4 +12,5 @@ public interface BookOperations {
     void deleteReviewsByUser(User user);
     List<Book> findReviewedBooks(User user);
     Page<Book> fullTextSearch(String text, Pageable pageable);
+    List<String> findMostRated(int cnt);
 }
